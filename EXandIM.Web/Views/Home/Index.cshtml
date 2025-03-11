@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="d-flex flex-column flex-column-fluid  container-fluid ">
+
+    <!--begin::Post-->
+    <div class="content flex-column-fluid" id="kt_content">
+        <!--begin::Row-->
+        <div class="row">
+            <!--begin::Col-->
+            <div>
+                <!--begin::Tiles Widget 2-->
+                <a asp-controller="ImportBook" class="card h-90px bgi-no-repeat mb-5 mb-lg-10" style="background-color: #1B283F;  background-size: cover; background-image:url('/assets/images/img-12.jpg')">
+                    <!--begin::Body-->
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <!--begin::Title-->
+                        <h1 class="text-end text-black fw-bold fs-1 mb-0 mt-5">
+                            وارد
+                        </h1>
+                        <!--end::Title-->
+                    </div>
+                    <!--end::Body-->
+                </a>
+
+                <!--end::Tiles Widget 2-->
+                <!--begin::Tiles Widget 2-->
+                <a asp-controller="ExportBook" class="card h-90px bgi-no-repeat mb-5 mb-lg-10" style="background-color: #1B283F; background-size: cover; background-image:url('/assets/images/img-12.jpg')">
+                    <!--begin::Body-->
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <!--begin::Title-->
+                        <h1 class="text-end text-black fw-bold fs-1 mb-0 mt-5">
+                            صادر
+                        </h1>
+                        <!--end::Title-->
+                    </div>
+                    <!--end::Body-->
+                </a>
+                <!--end::Tiles Widget 2-->
+                <!--begin::Tiles Widget 2-->
+                <a asp-controller="Readings" class="card h-90px bgi-no-repeat mb-5 mb-lg-10" style="background-color: #1B283F; background-size: cover; background-image:url('/assets/images/img-12.jpg')">
+                    <!--begin::Body-->
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <!--begin::Title-->
+                        <h1 class="text-end text-black fw-bold fs-1 mb-0 mt-5">
+                            مطالعه
+                        </h1>
+                        <!--end::Title-->
+                    </div>
+                    <!--end::Body-->
+                </a>
+                <!--end::Tiles Widget 2-->
+                <!--begin::Tiles Widget 2-->
+                <a asp-controller="Activity" class="card h-90px bgi-no-repeat mb-5 mb-lg-10" style="background-color: #1B283F; background-size: cover; background-image:url('/assets/images/img-12.jpg')">
+                    <!--begin::Body-->
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <!--begin::Title-->
+                        <h1 class="text-end text-black fw-bold fs-1 mb-0 mt-5">
+                            سلسله
+                        </h1>
+                        <!--end::Title-->
+                    </div>
+                    <!--end::Body-->
+                </a>
+                <!--end::Tiles Widget 2-->
+            </div>
+            <!--end::Col-->
+        </div>
+        <!--end::Row-->
+    </div>
+    <!--end::Post-->
+</div>

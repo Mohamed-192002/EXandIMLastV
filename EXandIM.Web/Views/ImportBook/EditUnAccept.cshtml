@@ -1,0 +1,89 @@
+﻿@model UnAcceptedImportBookFormViewModel
+
+@{
+    ViewData["Title"] = "الوارد";
+}
+
+<div class="card mb-10 shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">قبول وارد معلق</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" asp-controller="ImportBook" enctype="multipart/form-data" id="Form">
+            @if (Model.Id > 0)
+            {
+                <input type="hidden" asp-for="Id" />
+            }
+            <div class="row">
+                <!--begin::Label-->
+                <label class="mb-5 col-lg-4 col-form-label required fw-semibold fs-6">رقم الوارد / تاريخ الورود </label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-6">
+                            <!--begin::Row-->
+                            <div class="row">
+                                <!--begin::Col-->
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                    <input type="text" class="form-control form-control-solid" placeholder="رقم الوارد" asp-for="ImportNumber" />
+                                    <span asp-validation-for="ImportNumber" class="text-danger d-block"></span>
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Row-->
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-lg-6">
+                            <!--begin::Row-->
+                            <div class="row">
+                                <!--begin::Col-->
+                                <div class="col-lg-12 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                    <input type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0 js-datepicker" placeholder="تاريخ الورود" asp-for="ImportDate">
+                                    <span asp-validation-for="ImportDate" class="fv-plugins-message-container invalid-feedback"></span>
+                                </div>
+                                <!--end::Col-->
+                            </div>
+                            <!--end::Row-->
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+        </form>
+    </div>
+    <div class="card-footer">
+        <button type="submit" class="btn btn-primary" form="Form">
+            <span class="indicator-label">
+               حفظ التعديلات والقبول
+            </span>
+            <span class="indicator-progress">
+                رجاء الانتظار... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
+        </button>
+        <a class="btn btn-light text-primary ms-3" asp-action="Index">Cancel</a>
+    </div>
+</div>
+<!--begin::Notice-->
+<div class="notice d-flex bg-light-warning rounded border-warning border border-dashed  p-6">
+    <i class="bi bi-info-square fs-2x text-warning me-4" style="opacity: 0.5;"></i>
+    <!--begin::Wrapper-->
+    <div class="d-flex flex-stack flex-grow-1 ">
+        <!--begin::Content-->
+        <div class=" fw-semibold">
+            <h4 class="text-gray-900 fw-bold">حتى يتم قبول هذا الوارد يجب تغير قيمه رقم الوارد وتاريخ الورود</h4>
+        </div>
+        <!--end::Content-->
+    </div>
+    <!--end::Wrapper-->
+</div>
+<!--end::Notice-->
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

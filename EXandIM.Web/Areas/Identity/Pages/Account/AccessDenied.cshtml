@@ -1,0 +1,52 @@
+﻿@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "تم الرفض";
+}
+
+@* <header>
+    <h1 class="text-danger">@ViewData["Title"]</h1>
+    <p class="text-danger">ليس لديك حق الوصول إلى هذا المورد.</p>
+</header> *@
+<div class="d-flex flex-column flex-root">
+    <!--begin::Authentication - Signup Welcome Message -->
+    <div class="d-flex flex-column flex-center flex-column-fluid">
+        <!--begin::Content-->
+        <div class="d-flex flex-column flex-center text-center p-10">
+            <!--begin::Wrapper-->
+           @*  <div class="card card-flush w-lg-650px py-5"> *@
+            <div>
+                <div class="card-body py-15 py-lg-20">
+                    <!--begin::Title-->
+                    <h1 class="fw-bolder text-danger mb-5">403</h1>
+                    <!--end::Title-->
+                    <!--begin::Title-->
+                    <h1 class="fw-bolder text-danger mb-5">
+                        تم الرفض
+                    </h1>
+                    <!--end::Title-->
+                    <!--begin::Text-->
+                    <div class="fw-semibold fs-6 text-gray-500 mb-8">
+                        عذرا، ولكن ليس لديك إذن للوصول إلى هذه الصفحة.
+                    </div>
+                    <!--end::Text-->
+                    <!--begin::Link-->
+                    <div class="mb-11">
+                        <a asp-action="Index" class="btn btn-sm btn-primary">الذهاب الى الصفحه الرئيسيه</a>
+                    </div>
+                    <!--end::Link-->
+                    <!--begin::Illustration-->
+                    <div class="mb-0">
+                        <img src="~/assets/images/membership.png" class="mw-100 mh-200px theme-light-show" alt="">
+                        <img src="~/assets/images/membership-dark.png" class="mw-100 mh-200px theme-dark-show" alt="">
+                    </div>
+                    <!--end::Illustration-->
+
+                </div>
+            </div>
+            <!--end::Wrapper-->
+        </div>
+        <!--end::Content-->
+    </div>
+    <!--end::Authentication - Signup Welcome Message-->
+</div>

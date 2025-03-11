@@ -1,0 +1,17 @@
+﻿@model MyFolderViewModel
+
+<form asp-action="CreateFolder">
+    <div class="form-group">
+        <label asp-for="FolderPath" class="control-label">ادخل المسار</label>
+        <input asp-for="FolderPath" class="form-control" />
+        <span asp-validation-for="FolderPath" class="text-danger"></span>
+    </div>
+    <div class="form-group mt-4">
+        <input type="submit" value="اضافه الى ملفاتى" class="btn btn-primary font-weight-bold" />
+    </div>
+</form>
+@section Scripts
+{
+    <script src="~/assets/plugins/tinymce/tinymce.bundle.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

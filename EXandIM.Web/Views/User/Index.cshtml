@@ -1,0 +1,78 @@
+﻿@using EXandIM.Web.Core
+@model IList<UserViewModel>
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
+
+@{
+    ViewData["Title"] = "المستخدمين";
+}
+@section Styles
+{
+    <link rel="stylesheet" href="~/assets/plugins/datatables/datatables.bundle.css" />
+}
+<div class="alert bg-light-primary border border-primary border-3 border-dashed d-flex justify-content-between w-100 p-5 mb-10">
+    <div class="d-flex align-items-center">
+        <div class="symbol symbol-40px me-4">
+            <div class="symbol-label fs-2 fw-semibold text-success">
+                <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/technology/teh001.svg-->
+                <span class="svg-icon svg-icon-primary svg-icon-2hx">
+                    <i style="font-size:30px" class="bi bi-people"></i>
+                </span>
+                <!--end::Svg Icon-->
+            </div>
+        </div>
+        <!--begin::Content-->
+        <div class="d-flex flex-column pe-0 pe-sm-10">
+            <h5 class="mb-1">المستخدمين</h5>
+        </div>
+        <!--end::Content-->
+    </div>
+    <div>
+        <a asp-action="Create" asp-controller="User" class="btn btn-sm btn-primary"
+           data-title="أضافه مستخدم">
+            <i class="bi bi-plus-square-dotted"></i>
+            اضافه مستخدم
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <partial name="_DataTablesCardHeader" />
+    <div class="card-body pt-0">
+        <div class="table-responsive">
+            <table class="table table-row-dashed table-row-gray-300 gy-7 js-datatables" data-document-title="Users">
+                <thead>
+                    <tr class="fw-bold fs-6 text-gray-800">
+                        <th style="text-align:start">الاسم بالكامل</th>
+                        <th style="text-align:center">اسم المستخدم</th>
+                        <th style="text-align:center">الدائره</th>
+                        <th style="text-align:center">القسم</th>
+                        @if (User.IsInRole(AppRoles.SuperAdmin))
+                        {
+                            <th style="text-align:center">كلمه المرور</th>
+                        }
+                        <th style="text-align:center">حاله الحساب</th>
+                        <th style="text-align:end" class="js-no-export">فعل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var type in Model)
+                    {
+                        <partial name="_UserRow" model="@type" />
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" name="__RequestVerificationToken" value="@antiforgery.GetAndStoreTokens(Context).RequestToken" />
+
+@section Plugins
+{
+    <script src="~/assets/plugins/datatables/datatables.bundle.js"></script>
+}
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

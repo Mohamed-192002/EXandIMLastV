@@ -1,0 +1,118 @@
+﻿@model SecondSubEntityFormViewModel
+
+@{
+    string error = "هذا المستوى موجود";
+}
+<form asp-action="@(Model?.Id > 0 ? "Edit" : "Create")"
+      data-ajax-method="post"
+      data-ajax="true"
+      data-ajax-begin="onModalBegin"
+      data-ajax-success="onModalSuccess"
+      data-ajax-failure="showErrorMessage('@error')"
+      data-ajax-complete="onModalComplete">
+    @if (Model?.Id > 0)
+    {
+        <input type="hidden" asp-for="Id" />
+    }
+    <div class="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+            <span class="required">الجهة</span>
+        </label>
+        <!--end::Label-->
+        <!--begin::Row-->
+        <div class="row">
+            <!--begin::Col-->
+            <div class="fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                <select aria-label="Select a Country" data-control="select2" data-placeholder="اسم الجهة..." class="form-select form-select-solid form-select-lg fw-semibold"
+                        asp-for="EntityId" asp-items="Model.Entities">
+                    <option value="">اسم الجهة...</option>
+                </select>
+                <span asp-validation-for="EntityId" class="text-danger d-block"></span>
+            </div>
+            <!--end::Col-->
+        </div>
+        <!--end::Row-->
+    </div>
+    <div class="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+            <span class="required">المستوى الاول للجهه</span>
+        </label>
+        <!--end::Label-->
+        <!--begin::Row-->
+        <div class="row">
+            <!--begin::Col-->
+            <div class="fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                <select aria-label="Select a Country" data-control="select2" data-placeholder="اسم المستوى الاول للجهه..." class="form-select form-select-solid form-select-lg fw-semibold"
+                        asp-for="SubEntityId" asp-items="Model.SubEntities">
+                    <option value="">اسم المستوى الاول للجهه...</option>
+                </select>
+                <span asp-validation-for="SubEntityId" class="text-danger d-block"></span>
+            </div>
+            <!--end::Col-->
+        </div>
+        <!--end::Row-->
+    </div>
+    <div class="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+            <span class="required">اسم المستوى الثانى للجهه</span>
+        </label>
+        <!--end::Label-->
+        <!--begin::Row-->
+        <div class="row">
+            <!--begin::Col-->
+            <div class="fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                <input type="text" class="form-control" placeholder="اسم المستوى الثانى للجهه" asp-for="Name" />
+                <span asp-validation-for="Name" class="text-danger d-block"></span>
+            </div>
+            <!--end::Col-->
+        </div>
+        <!--end::Row-->
+    </div>
+    @*   <div class="mb-5 fs-6">
+        <div class="form-floating mb-2">
+            <input type="text" class="form-control" placeholder="Name" asp-for="Name" />
+            <label style="margin-right:30px" asp-for="Name"></label>
+        </div>
+        <span asp-validation-for="Name" class="text-danger d-block"></span>
+    </div>
+ *@
+
+    @if (Model?.Id>0)
+    {
+        @if (Model.IsInside)
+        {
+            <div class="mb-5 activeInside">
+                <div class="mb-2">
+                    <label asp-for="AcceptArchive" class="form-check form-switch form-check-custom form-check-solid" style="margin-right: 20px; margin-bottom: 20px;">
+                        <span class="form-check-label fw-semibold">
+                            يمكنه استلام الوارد من خارج الدائره؟
+                        </span>
+                        <input asp-for="AcceptArchive" class="form-check-input" type="checkbox" style="height: 20px;">
+                    </label>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="mb-5 activeInside">
+            <div class="mb-2">
+                <label asp-for="AcceptArchive" class="form-check form-switch form-check-custom form-check-solid" style="margin-right: 20px; margin-bottom: 20px;">
+                    <span class="form-check-label fw-semibold">
+                        يمكنه استلام الوارد من خارج الدائره؟
+                    </span>
+                    <input asp-for="AcceptArchive" class="form-check-input" type="checkbox" style="height: 20px;">
+                </label>
+            </div>
+        </div>
+    }
+
+
+
+    <partial name="_ModalFooter" />
+</form>
+
+<script src="~/js/book-form.js" asp-append-version="true"></script>

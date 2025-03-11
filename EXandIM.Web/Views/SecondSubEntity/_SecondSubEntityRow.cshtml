@@ -1,0 +1,18 @@
+﻿@model SecondSubEntityViewModel
+<tr>
+    <td style="text-align:center">@Model.Entity</td>
+    <td style="text-align:center">@Model.SubEntity</td>
+    <td style="text-align:center">@Model.Name</td>
+    <td style="text-align:center">
+        <a href="javascript:;" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary js-render-modal"
+           data-title="تعديل المستوى الثانى للجهه" data-url="/SecondSubEntity/Edit/@Model.Id" data-update="true">
+            تعديل المستوى الثانى للجهه
+        </a>
+    </td>
+    <td style="text-align:end">
+        <a href="javascript:;" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger js-confirm"
+           data-title="حذف المستوى الاول للجهه" data-url="/SecondSubEntity/Delete/@Model.Id" data-update="true" data-message="هل متأكد من حذف هذه الجهه؟">
+            حذف المستوى الثانى للجهه
+        </a>
+    </td>
+</tr>

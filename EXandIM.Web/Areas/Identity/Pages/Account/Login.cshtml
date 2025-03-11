@@ -1,0 +1,91 @@
+﻿@page
+@model LoginModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Login";
+}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>قسم الارشفة و التدقيق الالكتروني</title>
+    <link href="~/css/style.css" rel="stylesheet" />
+    <link href="~/css/style - login.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <div class="container">
+        <div class="">
+            <div class="container">
+                <div class="col-md-4 col-xs-12 hidden-sm hidden-xs">
+                    <div class="wrapper hidden-mobile">
+                        <div class="images-wrapper">
+                            <img class="notification" src="~/img/5.webp">
+                            <img class="chart" src="~/img/7.webp">
+                            <img class="calender" src="~/img/8.webp">
+                            <img class="chart-two" src="~/img/6.webp">
+                            <img class="task-one" src="~/img/4.webp">
+                            <img class="task-two" src="~/img/2.webp">
+                            <img class="task-three" src="~/img/3.webp">
+                            <img src="~/img/background.png">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 formmar">
+                    <div class="login-content">
+                        <div class="anim">
+                            <form class="form w-100" novalidate="novalidate" id="kt_sign_in_form" method="post">
+                                <img src="~/img/sjc.jpg" class="animated-border" />
+                                <h3 style="font-size:185%;padding-bottom:10px" class="title">
+                                    مرحبا بكم في نظام </br>ادارة قسم الارشفة و التدقيق
+                                    الالكتروني
+                                </h3>
+                                <div class="input-div one">
+                                    <div class="i">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="div">
+                                        <h5>اسم المستخدم</h5>
+                                        <input type="text" name="UserName" class="form-control input" autocomplete="username"
+                                               aria-required="true">
+                                    </div>
+                                </div>
+                                <div class="input-div pass">
+                                    <div class="i">
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                    <div class="div">
+                                        <h5>كلمه المرور</h5>
+                                        <input type="password" name="Password" class="form-control input"
+                                               autocomplete="current-password" aria-required="true" />
+                                    </div>
+                                </div>
+                                <div class="login-box">
+                                    <button type="submit">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        تسجيل الدخول
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <script src="~/js/main.js"></script>
+
+
+</body>
+
+</html>
+

@@ -1,0 +1,204 @@
+﻿@model UserFormViewModel
+
+@{
+    ViewData["Title"] = "المستخدمين";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">اضافه مستخدم</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" asp-action="@(!string.IsNullOrEmpty(Model?.Id) ? "Edit" : "Create")" enctype="multipart/form-data" id="Form">
+            @if (!string.IsNullOrEmpty(Model?.Id))
+            {
+                <input type="hidden" asp-for="Id" />
+            }
+            <div class="row mb-6">
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="Image">صوره المستخدم</label>
+                <div class="col-lg-8">
+                    <!--begin::Image input-->
+                    <div class="image-input image-input-empty" data-kt-image-input="true" style="background-image: url(@(string.IsNullOrEmpty(Model.ImageUrl) ? "/assets/images/avatar-blank.svg" : Model.ImageThumbnailUrl))">
+                        <!--begin::Image preview wrapper-->
+                        <div class="image-input-wrapper w-100px h-100px"></div>
+                        <!--end::Image preview wrapper-->
+                        <!--begin::Edit button-->
+                        <label class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                               data-kt-image-input-action="change"
+                               data-bs-dismiss="click">
+                            <i class="bi bi-pencil-fill fs-7"></i>
+
+                            <!--begin::Inputs-->
+                            <input type="file" asp-for="Image" />
+                            <input type="hidden" name="avatar_remove" />
+                            <!--end::Inputs-->
+                        </label>
+                        <!--end::Edit button-->
+                        <!--begin::Cancel button-->
+                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                              data-kt-image-input-action="cancel"
+                              data-bs-dismiss="click">
+                            <i class="bi bi-x fs-2"></i>
+                        </span>
+                        <!--end::Cancel button-->
+                        <!--begin::Remove button-->
+                        <span class="btn btn-icon btn-circle btn-color-muted btn-active-color-primary w-25px h-25px bg-body shadow"
+                              data-kt-image-input-action="remove"
+                              data-bs-dismiss="click">
+                            <i class="bi bi-x fs-2"></i>
+                        </span>
+                        <!--end::Remove button-->
+                    </div>
+                    <span asp-validation-for="Image" class="text-danger d-block"></span>
+                    <!--end::Image input-->
+                </div>
+            </div>
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="FullName">الاسم بالكامل</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class=" fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <input type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="ادخل الاسم" asp-for="FullName">
+                            <span asp-validation-for="FullName" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="UserName">اسم المستخدم</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class=" fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <input type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="ادخل اسم المستخدم" asp-for="UserName">
+                            <span asp-validation-for="UserName" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row">
+                <!--begin::Label-->
+                <label class="mb-5 col-lg-4 col-form-label required fw-semibold fs-6">اسم الدائره / اسم القسم </label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اختار الدائره..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                    asp-for="CircleId" asp-items="Model.Circles">
+                                <option value="">اختار الدائره...</option>
+                            </select>
+                            <span asp-validation-for="CircleId" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اختار اسم القسم..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                    asp-for="TeamId" asp-items="Model.Teams">
+                                <option value="">اختار اسم القسم...</option>
+                            </select>
+                            <span asp-validation-for="TeamId" class="fv-plugins-message-container invalid-feedback"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="SelectedRoles">الدور</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row mb-6">
+                        <div class="mb-2">
+                            <select class="form-select form-select-solid js-select2" data-placeholder="اختار دور" asp-for="SelectedRoles" asp-items="@Model.Roles">
+                            </select>
+                        </div>
+                        <span asp-validation-for="SelectedRoles" class="text-danger d-block"></span>
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            @if (string.IsNullOrEmpty(Model?.Id))
+            {
+                <div class="row mb-6">
+                    <!--begin::Label-->
+                    <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="Password">كلمه المرور</label>
+                    <!--end::Label-->
+                    <!--begin::Col-->
+                    <div class="col-lg-8">
+                        <!--begin::Row-->
+                        <div class="row">
+                            <!--begin::Col-->
+                            <div class=" fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                <input type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="ادخل كلمه المرور" asp-for="Password">
+                                <span asp-validation-for="Password" class="fv-plugins-message-container invalid-feedback"></span>
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Row-->
+                    </div>
+                    <!--end::Col-->
+                </div>
+                <div class="row mb-6">
+                    <!--begin::Label-->
+                    <label class="col-lg-4 col-form-label required fw-semibold fs-6" asp-for="ConfirmPassword">تأكيد كلمه المرور</label>
+                    <!--end::Label-->
+                    <!--begin::Col-->
+                    <div class="col-lg-8">
+                        <!--begin::Row-->
+                        <div class="row">
+                            <!--begin::Col-->
+                            <div class=" fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                <input type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="ادخل تأكيد كلمه المرور" asp-for="ConfirmPassword">
+                                <span asp-validation-for="ConfirmPassword" class="fv-plugins-message-container invalid-feedback"></span>
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Row-->
+                    </div>
+                    <!--end::Col-->
+                </div>
+            }
+
+        </form>
+    </div>
+    <div class="card-footer">
+        <button type="submit" class="btn btn-primary" form="Form">
+            <span class="indicator-label">
+                حفظ
+            </span>
+            <span class="indicator-progress">
+                برجاء الانتظار... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
+        </button>
+        <a class="btn btn-light text-primary ms-3" asp-action="Index">الغاء</a>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/user-form.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+}

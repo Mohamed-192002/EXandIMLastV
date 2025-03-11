@@ -1,0 +1,89 @@
+﻿
+
+/* Styart override Typeahead */
+.tt-menu{
+    left: unset;
+    right: 0;
+}
+
+.tt-dataset{
+    text-align: right;
+}
+/* End override Typeahead */
+@media only screen and (min-width: 1025px) {
+    .launcher .sidebar {
+        right: unset;
+        left: 50px;
+    }
+}
+
+/* Start override bootbox */
+.bootbox-close-button {
+    right: unset;
+    left: 0;
+}
+/* End override bootbox */
+
+/* Start override theme */
+.card .card-header .card-title .card-label {
+    margin: 0 0 0 0.75rem;
+}
+
+#kt_wrapper {
+    padding-left: 0;
+}
+/* End override theme */
+
+
+
+.form-floating > label {
+    transform-origin: right;
+}
+
+.form-control.is-invalid, .was-validated .form-control:invalid,
+.form-control.is-valid, .was-validated .form-control:valid {
+    padding-left: calc(1.5em + 1.55rem);
+    padding-right: 10px;
+    background-position: left calc(.375em + .3875rem) center;
+}
+
+/* End override bootstrap */
+
+/* Start override Daterange picker */
+.drp-calendar{
+    direction: rtl;
+}
+
+    .drp-calendar.left {
+        float: right;
+    }
+
+    .drp-calendar.right {
+        float: left;
+    }
+/* End override Daterange picker */
+.transform-x {
+    transform: unset;
+}
+
+input { 
+    direction: rtl;
+}
+
+input.has-icon {
+    padding-right: 60px !important;
+}
+
+svg.reverse {
+    transform: scaleX(-1);
+}
+
+.end-0 {
+    left: 0 !important;
+    right: unset !important;
+}
+
+.glass {
+    backdrop-filter: blur(16px);
+}
+

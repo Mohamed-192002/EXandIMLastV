@@ -1,0 +1,212 @@
+﻿@using EXandIM.Web.Core
+@model PermissionsViewModel
+
+@{
+    ViewData["Title"] = "تعديل الصلاحيات";
+
+    var roleDisplays = new Dictionary<string, string>
+    {
+        { AppRoles.CanCreateExport, "يمكنه الانشاء؟" },
+        { AppRoles.CanEditExport, "يمكنه التعديل؟" },
+        { AppRoles.CanDeleteExport, "يمكنه الحذف؟" },
+        { AppRoles.CanViewExport, "يمكنه المشاهده؟" },
+
+        { AppRoles.CanCreateImport, "يمكنه الانشاء؟" },
+        { AppRoles.CanEditImport, "يمكنه التعديل؟" },
+        { AppRoles.CanDeleteImport, "يمكنه الحذف؟" },
+        { AppRoles.CanViewImport, "يمكنه المشاهده؟" },
+
+        { AppRoles.CanCreateReading, "يمكنه الانشاء؟" },
+        { AppRoles.CanEditReading, "يمكنه التعديل؟" },
+        { AppRoles.CanDeleteReading, "يمكنه الحذف؟" },
+        { AppRoles.CanViewReading, "يمكنه المشاهده؟" },
+
+        { AppRoles.CanCreateActivity, "يمكنه الانشاء؟" },
+        { AppRoles.CanEditActivity, "يمكنه التعديل؟" },
+        { AppRoles.CanDeleteActivity, "يمكنه الحذف؟" },
+        { AppRoles.CanViewActivity, "يمكنه المشاهده؟" },
+
+        { AppRoles.CanViewMyTeamOnly, "يمكنه المشاهده على مستوى القسم؟" },
+
+    };
+}
+
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .card-body {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .form-switch {
+        display: inline-block;
+        text-align: center;
+    }
+
+        .form-switch input[type="checkbox"] {
+            display: none;
+        }
+
+            .form-switch input[type="checkbox"] + label {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 20px;
+                background-color: #ccc;
+                border-radius: 15px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+                .form-switch input[type="checkbox"] + label::after {
+                    content: '';
+                    position: absolute;
+                    top: 2px;
+                    left: 2px;
+                    width: 16px;
+                    height: 16px;
+                    background-color: #fff;
+                    border-radius: 50%;
+                    transition: transform 0.3s;
+                }
+
+            .form-switch input[type="checkbox"]:checked + label {
+                background-color: #4CAF50;
+            }
+
+                .form-switch input[type="checkbox"]:checked + label::after {
+                    transform: translateX(20px);
+                }
+</style>
+<div class="container mt-5">
+    @using (Html.BeginForm())
+    {
+        <!-- User Info card -->
+        <div class="card">
+            <div class="card-body">
+                <div class="row col-12">
+                    <div class="col-sm-6">
+                        <label for="username">اسم المستخدم</label>
+                        <input type="text" class="form-control" id="username" value="@Model.UserName" readonly>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="fullName">الاسم بالكامل</label>
+                        <input type="text" class="form-control" id="fullName" value="@Model.FullName" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Export roles card -->
+        <div class="card">
+            <div class="card-body">
+                <h3 class="text-primary">الصادرات</h3>
+                <div class="switches">
+                    @foreach (var role in Model.Roles)
+                    {
+                        @if (role.Text.Contains("Export"))
+                        {
+                            <div class="form-switch">
+                                <input name="SelectedRoles" value="@role.Value" @(Model.SelectedRoles.Contains(role.Value) ? "checked" : "") type="checkbox" id="export-@role.Value">
+                                <label for="export-@role.Value"></label>
+                                <div>@roleDisplays[role.Text]</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Reading roles card -->
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <h3 class="text-primary">الوارد</h3>
+                </div>
+                <div class="switches">
+                    @foreach (var role in Model.Roles)
+                    {
+                        @if (role.Text.Contains("Import"))
+                        {
+                            <div class="form-switch">
+                                <input name="SelectedRoles" value="@role.Value" @(Model.SelectedRoles.Contains(role.Value) ? "checked" : "") type="checkbox" id="import-@role.Value">
+                                <label for="import-@role.Value"></label>
+                                <div>@roleDisplays[role.Text]</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Import roles card -->
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <h3 class="text-primary">المطالعات</h3>
+                </div>
+                <div class="switches">
+                    @foreach (var role in Model.Roles)
+                    {
+                        @if (role.Text.Contains("Reading"))
+                        {
+                            <div class="form-switch">
+                                <input name="SelectedRoles" value="@role.Value" @(Model.SelectedRoles.Contains(role.Value) ? "checked" : "") type="checkbox" id="reading-@role.Value">
+                                <label for="reading-@role.Value"></label>
+                                <div>@roleDisplays[role.Text]</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity roles card -->
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <h3 class="text-primary">السلاسل</h3>
+                </div>
+                <div class="switches">
+                    @foreach (var role in Model.Roles)
+                    {
+                        @if (role.Text.Contains("Activity"))
+                        {
+                            <div class="form-switch">
+                                <input name="SelectedRoles" value="@role.Value" @(Model.SelectedRoles.Contains(role.Value) ? "checked" : "") type="checkbox" id="activity-@role.Value">
+                                <label for="activity-@role.Value"></label>
+                                <div>@roleDisplays[role.Text]</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- All view roles card -->
+        <div class="card">
+            <div class="card-body">
+                <div class="switches justify-content-center">
+                    @foreach (var role in Model.Roles)
+                    {
+                        @if (role.Text.Contains("ViewMyTeamOnly"))
+                        {
+                            <div class="form-switch">
+                                <input name="SelectedRoles" value="@role.Value" @(Model.SelectedRoles.Contains(role.Value) ? "checked" : "") type="checkbox" id="export-@role.Value">
+                                <label for="export-@role.Value"></label>
+                                <span style="padding-right:20px">@roleDisplays[role.Text]</span>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    }
+</div>

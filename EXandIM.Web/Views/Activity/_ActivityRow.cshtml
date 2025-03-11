@@ -1,0 +1,20 @@
+﻿@model ActivityBook
+<tr>
+    <td>@Model.Title</td>
+    <td>@Model.User.FullName</td>
+    <td style="text-align:center">
+        <a href="/Activity/Details/@Model.Id" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary">
+            التفاصيل
+        </a>
+    <td style="text-align:center">
+            <a href="javascript:;" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger js-confirm"
+           data-message="هل متأكد من حذف هذه السلسله؟" data-url="/Activity/Delete/@Model.Id">
+            حذف
+        </a>
+    </td>
+    <td style="text-align:end">
+        <a href="/Activity/Edit/@Model.Id" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-success btn-active-light-success">
+            تعديل
+        </a>
+    </td>
+</tr>

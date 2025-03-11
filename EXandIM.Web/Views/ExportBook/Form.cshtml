@@ -1,0 +1,330 @@
+﻿@model ExportBookFormViewModel
+
+@{
+    ViewData["Title"] = "الصادر";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">@(Model.Id.Equals(0) ? "اضافه" : "تعديل") صادرات</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" asp-controller="ExportBook" enctype="multipart/form-data" id="Form">
+            @if (Model.Id > 0)
+            {
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="IsExport" />
+            }
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-5">
+                                <div class="form-floating mb-2">
+                                    <input type="text" class="form-control form-control-solid" placeholder="Title" asp-for="Title" />
+                                    <label asp-for="Title" class="required"></label>
+                                </div>
+                                <span asp-validation-for="Title" class="text-danger d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-5">
+                                <div class="form-floating mb-2">
+                                    <input type="text" class="form-control form-control-solid" placeholder="رقم الكتاب" asp-for="BookNumber" />
+                                    <label asp-for="BookNumber" class="required"></label>
+                                </div>
+                                <span asp-validation-for="BookNumber" class="text-danger d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-5">
+                                <div class="form-floating mb-2">
+                                    <input type="date" class="form-control form-control-solid" placeholder="تاريخ الكتاب" asp-for="BookDate" />
+                                    <label asp-for="BookDate" class="required"></label>
+                                </div>
+                                <span asp-validation-for="BookDate" class="text-danger d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- #region BookFile -->
+                    @* <div class="row">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label  required fw-semibold fs-6" asp-for="BookFile"></label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    @if (!string.IsNullOrEmpty(Model.FileUrl))
+                    {
+                        <div class="mb-3 col-lg-12">
+                            <label for="existingFile" class="form-label col-lg-2">الملف الحالي:</label>
+                            <!-- Download link for the existing file -->
+                            <a href="@Model.FileUrl" class="btn btn-primary" target="_blank">تحميل الملف</a>
+                            <!-- Display the file name -->
+                            <span id="existingFileName">@Model.BookFile</span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="BookFile" class="form-label">اختر ملف جديد:</label>
+                            <input class="form-control" type="file" asp-for="BookFile">
+                            <span asp-validation-for="BookFile" class="text-danger"></span>
+                        </div>
+                    }
+                    else
+                    {
+                        <!--begin::Row-->
+                        <div class="row">
+                            <!--begin::Col-->
+                            <div class=" mb-5 col-lg-12 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                <input class="form-control" type="file" asp-for="BookFile">
+                                <span asp-validation-for="BookFile" class="text-danger d-block"></span>
+                            </div>
+                            <!--end::Col-->
+                        </div>
+                        <!--end::Row-->
+                    }
+
+                </div>
+                <!--end::Col-->
+            </div> *@
+            <!-- #endregion -->
+            <div class="row">
+                <!--begin::Label-->
+                <label class="mb-5 col-lg-4 col-form-label required fw-semibold fs-6">اسم الجهة الصادر اليها / المستوى الاول للجهه </label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اسم الجهة الصادر اليها..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                    asp-for="SelectedEntities" asp-items="Model.Entities">
+                                <option value="">اسم الجهة الصادر اليها...</option>
+                            </select>
+                            <span asp-validation-for="SelectedEntities" class="text-danger d-block"></span>
+                        </div>
+                        <!--end::Col-->
+                        <!--begin::Col-->
+                        <div class="col-lg-6 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اختار المستوى الاول للجهه..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                    asp-for="SelectedSubEntity" asp-items="Model.SubEntities">
+                                <option value="">اختار المستوى الاول للجهه...</option>
+                            </select>
+
+                            <span asp-validation-for="SelectedSubEntity" class="text-danger d-block"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row">
+                <!--begin::Label-->
+                <label class="mb-5 col-lg-4 col-form-label required fw-semibold fs-6">المستوى الثانى للجهه</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <select aria-label="Select a Country" data-control="select2" data-placeholder="المستوى الثانى للجهه..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                    asp-for="SelectedSecondSubEntity" asp-items="Model.SecondSubEntities">
+                                <option value="">االمستوى الثانى للجهه...</option>
+                            </select>
+                            <span asp-validation-for="SelectedSecondSubEntity" class="text-danger d-block"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row">
+                <!--begin::Label-->
+                <label class="mb-5 col-lg-4 col-form-label required fw-semibold fs-6">الجهة المصدر للكتاب</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اسم الجهة المصدر للكتاب..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                    asp-for="SideEntityId" asp-items="Model.SideEntities">
+                                <option value="">اسم الجهة المصدر للكتاب...</option>
+                            </select>
+                            <span asp-validation-for="SideEntityId" class="text-danger d-block"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row">
+                <!--begin::Label-->
+                <label class="mb-5 col-lg-4 col-form-label required fw-semibold fs-6" asp-for="SelectedTeams">الاقسام</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <div class="">
+                            <select class="form-select form-select-solid js-select2" data-placeholder="اختار القسم" asp-for="SelectedTeams" asp-items="@Model.Teams">
+                            </select>
+                        </div>
+                        <span asp-validation-for="SelectedTeams" class="text-danger d-block"></span>
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            <div class="row">
+                <!--begin::Label-->
+                <label class="mb-5 col-lg-4 col-form-label required fw-semibold fs-6">الحفظ فى دائره اخرى</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <select data-allow-clear="true" aria-label="Select a Country" data-control="select2" data-placeholder="اسم الدائره الاخرى..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                    asp-for="SendCircleId" asp-items="Model.SendCircles" id="sendCircleSelect">
+                                <option value="">اسم الدائره الاخرى...</option>
+                            </select>
+                            <span asp-validation-for="SendCircleId" class="text-danger d-block"></span>
+
+                            <button type="button" class="btn btn-sm  btn-secondary mt-3 mb-3" onclick="clearSelection()">حذف المحدد</button>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+           
+            <div class="row">
+                <!--begin::Label-->
+                <label class="mb-5 col-lg-4 col-form-label fw-semibold fs-6" asp-for="Notes"></label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-12 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <textarea class="form-control form-control-solid" type="text" placeholder="اكتب ملاحظاتك" asp-for="Notes"></textarea>
+                            <span asp-validation-for="Notes" class="fv-plugins-message-container invalid-feedback"></span>
+                            <!--end::Col-->
+                        </div>
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+            @if (Model.Id > 0)
+            {
+                <div class="row mb-6">
+                    <!--begin::Label-->
+                    <label class="col-lg-4 col-form-label fw-semibold fs-6" asp-for="Passed"></label>
+                    <!--begin::Label-->
+                    <!--begin::Label-->
+                    <div class="col-lg-8 d-flex align-items-center">
+                        <div class="form-check form-check-solid form-switch form-check-custom fv-row">
+                            <input class="form-check-input w-70px h-25px" type="checkbox" asp-for="Passed">
+                        </div>
+                    </div>
+                    <!--begin::Label-->
+                </div>
+            }
+            @if (Model.Id > 0)
+            {
+                <div class="row">
+                    <!--begin::Label-->
+                    <label class="col-lg-4 col-form-label fw-semibold fs-6">صور الكتاب</label>
+                    <!--end::Label-->
+                    <!--begin::Col-->
+                    <div id="head" class="col-lg-8">
+                        @if (Model.ExistingFiles != null && Model.ExistingFiles.Any())
+                        {
+                            <div class="mb-3 col-lg-12">
+                                @* Declare a counter variable *@
+                                @{
+                                    int i = 1;
+                                }
+                                <!-- Display each existing image with a download link and name -->
+                                @foreach (var item in Model.ExistingFiles)
+                                {
+                                    <div class="image-item" id="image-item-@i">
+                                        <h3 class="fw-bold" title="@item.FileName" data-toggle="tooltip" data-placement="top">
+                                            @((item.FileName?.Length > 60 ? item.FileName.Substring(0, 60) + "..." : item.FileName))
+                                        </h3>
+                                        <a href="@item.FileUrl" class="btn btn-primary mb-2" target="_blank">تحميل الصورة @i</a>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteImage('@item.FileUrl', '@i')">حذف</button>
+                                    </div>
+                                    i++;
+                                }
+                            </div>
+                        }
+                    </div>
+                    <!--end::Col-->
+                </div>
+            }
+            else
+            {
+                <!--begin::Row-->
+                <div class="row">
+                    <!--begin::Label-->
+                    <label class="col-lg-4 col-form-label fw-semibold fs-6" asp-for="BookFiles"></label>
+                    <!--end::Label-->
+                    <!--begin::Col-->
+                    <div id="head" class="mb-5 col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                    </div>
+                    <!--end::Col-->
+                </div>
+                <!--end::Row-->
+            }
+            <!-- Button to add more file inputs -->
+            <button type="button" class="btn btn-info mb-2" onclick="addFileInput()">اضافه صوره</button>
+            <!-- Hidden input to track deleted image URLs -->
+            <input type="hidden" name="DeletedFileUrls" id="DeletedFileUrls" value="" />
+        </form>
+    </div>
+    <div class="card-footer">
+        <button data-errormessage="لا يمكن حذف هذا القسم" type="submit" class="btn btn-primary" form="Form">
+            <span class="indicator-label">
+                حفظ
+            </span>
+            <span class="indicator-progress">
+                رجاء الانتظار... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+            </span>
+        </button>
+        <a class="btn btn-light text-primary ms-3" asp-action="Index">Cancel</a>
+    </div>
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/book-form.js" asp-append-version="true"></script>
+    <script src="~/js/image.js" asp-append-version="true"></script>
+}
+
+<script>
+    function clearSelection() {
+        document.getElementById('sendCircleSelect').selectedIndex = 0;
+        $('#sendCircleSelect').val(null).trigger('change');
+    }
+</script>

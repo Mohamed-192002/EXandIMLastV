@@ -1,0 +1,429 @@
+﻿@model ActivityViewModel
+@{
+    ViewData["Title"] = "سلسله";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3 class="card-title">@(Model?.Id > 0 ? "تعديل" : "اضافه") سلسله</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" asp-action="@(Model?.Id > 0 ? "Edit" : "Create")" asp-controller="Activity" enctype="multipart/form-data" id="Form">
+            @if (Model?.Id > 0)
+            {
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="UserId" value="@Model.UserId" />
+            }
+            <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6">عنوان السلسله</label>
+                <!--end::Label-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <input name="Title" type="text" value="@Model.Title" required class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="ادخل عنوان السلسله">
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
+                <!-- #region اضافه قسم -->
+                         @*  <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label required fw-semibold fs-6">الاقسام</label>
+                <!--end::Label-->
+
+                    <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row mb-6">
+                        <div class="mb-2">
+                            <select class="form-select form-select-solid js-select2" required  multiple data-placeholder="اختار القسم" name="SelectedTeams">
+                                <option value="">اضافه قسم...</option>
+                                @foreach (var team in ViewBag.Teams)
+                                {
+                                    if (Model.SelectedTeams.Contains(team.Id))
+                                    {
+                                        <option value="@team.Id" selected>@team.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@team.Id">@team.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col--> 
+             
+            </div>
+            <!--end::Row-->*@
+               <!-- #endregion -->
+            <hr />
+            <div id="New">
+                @if (Model.Books is not null)
+                {
+                    var i = 0;
+                    @foreach (var book in Model.Books)
+                    {
+                        @if (book.Book is not null)
+                        {
+                            if (book.Book.IsExport)
+                            {
+                                <div class="Export" data-index="@i">
+                                    <div class="row mb-6">
+                                        <!--begin::Label-->
+                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">صادر</label>
+                                        <!--end::Label-->
+                                        <!--begin::Col-->
+                                        <div class="col-lg-8">
+                                            <!--begin::Row-->
+                                            <div class="row">
+                                                <!--begin::Col-->
+                                                <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                                    <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه صادر..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                                            required name="Books[@i].BookId">
+                                                        <option value="">اضافه صادر...</option>
+                                                        @foreach (var export in ViewBag.ExportBooks)
+                                                        {
+                                                            @if (export.Id == book.BookId)
+                                                            {
+                                                                <option value="@export.Id" selected>@export.Title</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@export.Id">@export.Title</option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <!--end::Col-->
+                                            </div>
+                                            <!--end::Row-->
+                                        </div>
+                                        <!--end::Col-->
+                                    </div>
+                                    <button type="button" class="btn btn-danger" onclick="removeOldSection(this)">حذف</button>
+                                    <hr />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="Import" data-index="@i">
+                                    <div class="row mb-6">
+                                        <!--begin::Label-->
+                                        <label class="col-lg-4 col-form-label required fw-semibold fs-6">وارد</label>
+                                        <!--end::Label-->
+                                        <!--begin::Col-->
+                                        <div class="col-lg-8">
+                                            <!--begin::Row-->
+                                            <div class="row">
+                                                <!--begin::Col-->
+                                                <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                                    <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه وارد..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                                            required name="Books[@i].BookId">
+                                                        <option value="">اضافه وارد...</option>
+                                                        @foreach (var Import in ViewBag.ImportBooks)
+                                                        {
+                                                            @if (Import.Id == book.BookId)
+                                                            {
+                                                                <option value="@Import.Id" selected>@Import.Title</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@Import.Id">@Import.Title</option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <!--end::Col-->
+                                            </div>
+                                            <!--end::Row-->
+                                        </div>
+                                        <!--end::Col-->
+                                    </div>
+                                    <button type="button" class="btn btn-danger" onclick="removeOldSection(this)">حذف</button>
+                                    <hr />
+                                </div>
+                            }
+                        }
+                        @if (book.Reading is not null)
+                        {
+                            <div class="Reading" data-index="@i">
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label required fw-semibold fs-6">مطالعه</label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="col-lg-8">
+                                        <!--begin::Row-->
+                                        <div class="row">
+                                            <!--begin::Col-->
+                                            <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                                <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه مطالعه..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                                        required name="Books[@i].ReadingId">
+                                                    <option value="">اضافه مطالعه...</option>
+                                                    @foreach (var Reading in ViewBag.ReadingsBooks)
+                                                    {
+                                                        @if (Reading.Id == book.ReadingId)
+                                                        {
+                                                            <option value="@Reading.Id" selected>@Reading.Title</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@Reading.Id">@Reading.Title</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <button type="button" class="btn btn-danger" onclick="removeOldSection(this)">حذف</button>
+                                <hr />
+                            </div>
+                        }
+                        @if (book.Procedure is not null)
+                        {
+                            <div class="Procedure" data-index="@i">
+                                <div class="row mb-6">
+                                    <!--begin::Label-->
+                                    <label class="col-lg-4 col-form-label required fw-semibold fs-6">اجراء</label>
+                                    <!--end::Label-->
+                                    <div class="col-lg-8">
+                                        <!--begin::Row-->
+                                        <div class="row">
+                                            <!--begin::Col-->
+                                            <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                                <input name="Books[@i].Procedure" value="@book.Procedure" required type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="اضافه اجراء">
+                                            </div>
+                                            <!--end::Col-->
+                                        </div>
+                                        <!--end::Row-->
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+
+                                <!-- Procedure Date (Nullable) -->
+                                <div class="row mb-6">
+                                    <label class="col-lg-4 col-form-label fw-semibold fs-6">تاريخ الاجراء</label>
+                                    <div class="col-lg-8">
+                                        <div class="row">
+                                            <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                                <input name="Books[@i].ProcedureDate" value="@book.ProcedureDate?.ToString("yyyy-MM-dd")" type="date" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="اختر تاريخ">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Remove Button -->
+                                <button type="button" class="btn btn-danger" onclick="removeOldSection(this)">حذف</button>
+                                <hr />
+                            </div>
+
+                        }
+                        i++;
+                    }
+                }
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button id="addExportButton" onclick="addExport()" type="button" class="btn btn-primary">
+                    <span class="indicator-label">
+                        اضافه صادر
+                    </span>
+                    <span class="indicator-progress">
+                        برجاء الانتظار... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+                <button id="addImportButton" onclick="addImport()" type="button" class="btn btn-primary">
+                    <span class="indicator-label">
+                        اضافه وارد
+                    </span>
+                    <span class="indicator-progress">
+                        برجاء الانتظار... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+                <button id="addReadingButton" onclick="addReading()" type="button" class="btn btn-primary">
+                    <span class="indicator-label">
+                        اضافه مطالعه
+                    </span>
+                    <span class="indicator-progress">
+                        برجاء الانتظار... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+                <button id="addProcedureButton" onclick="addProcedure()" type="button" class="btn btn-primary">
+                    <span class="indicator-label">
+                        اضافه اجراء
+                    </span>
+                    <span class="indicator-progress">
+                        برجاء الانتظار... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+            </div>
+            <br />
+            <div class="text-end">
+                <button id="saveButton" type="submit" class="btn btn-primary">
+                    <span class="indicator-label">
+                        حفظ
+                    </span>
+                    <span class="indicator-progress">
+                        برجاء الانتظار... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let index = @Model.Books?.Count() ?? 0;
+
+        function addExport() {
+            var newExportHtml = `
+                        <div class="Export" data-index="${index}">
+                            <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label required fw-semibold fs-6">صادر</label>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه صادر..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                                    required name="Books[${index}].BookId">
+                                                <option value="">اضافه صادر...</option>
+        @foreach (var export in ViewBag.ExportBooks)
+        {
+                                                        <option value="@export.Id">@export.Title</option>
+        }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-danger" onclick="removeSection(this)">حذف</button>
+                            <hr />
+                        </div>
+                    `;
+            document.getElementById("New").insertAdjacentHTML('beforeend', newExportHtml);
+            index++;
+        }
+
+        function addImport() {
+            var newImportHtml = `
+                        <div class="Import" data-index="${index}">
+                            <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label required fw-semibold fs-6">وارد</label>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه وارد..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                                    required name="Books[${index}].BookId">
+                                                <option value="">اضافه وارد...</option>
+        @foreach (var Import in ViewBag.ImportBooks)
+        {
+                                                        <option value="@Import.Id">@Import.Title</option>
+        }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-danger" onclick="removeSection(this)">حذف</button>
+                            <hr />
+                        </div>
+                    `;
+            document.getElementById("New").insertAdjacentHTML('beforeend', newImportHtml);
+            index++;
+        }
+
+        function addReading() {
+            var newReadingHtml = `
+                        <div class="Reading" data-index="${index}">
+                            <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label required fw-semibold fs-6">مطالعه</label>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه مطالعه..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                                    required name="Books[${index}].ReadingId">
+                                                <option value="">اضافه مطالعه...</option>
+        @foreach (var Reading in ViewBag.ReadingsBooks)
+        {
+                                                        <option value="@Reading.Id">@Reading.Title</option>
+        }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-danger" onclick="removeSection(this)">حذف</button>
+                            <hr />
+                        </div>
+                    `;
+            document.getElementById("New").insertAdjacentHTML('beforeend', newReadingHtml);
+            index++;
+        }
+
+        function addProcedure() {
+            var newProcedureHtml = `
+                        <div class="Procedure" data-index="${index}">
+                            <div class="row mb-6">
+                                <label class="col-lg-4 col-form-label required fw-semibold fs-6">اجراء</label>
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                                            <input name="Books[${index}].Procedure" required type="text" class="form-control form-control-lg form-control-solid mb-3 mb-lg-0" placeholder="اضافه اجراء">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-danger" onclick="removeSection(this)">حذف</button>
+                            <hr />
+                        </div>
+                    `;
+            document.getElementById("New").insertAdjacentHTML('beforeend', newProcedureHtml);
+            index++;
+        }
+
+        function removeSection(button) {
+            const section = button.closest('.Export, .Import, .Reading, .Procedure');
+            section.remove();
+            updateIndices();
+        }
+
+        function removeOldSection(button) {
+            const section = button.closest('.Export, .Import, .Reading, .Procedure');
+            section.remove();
+            updateIndices();
+        }
+
+        function updateIndices() {
+            const sections = document.querySelectorAll('.Export, .Import, .Reading, .Procedure');
+            sections.forEach((section, idx) => {
+                section.dataset.index = idx;
+                const selectElement = section.querySelector('select');
+                if (selectElement) {
+                    const selectName = selectElement.name;
+                    const newSelectName = selectName.replace(/\[\d+\]/, `[${idx}]`);
+                    selectElement.name = newSelectName;
+                }
+                const inputElement = section.querySelector('input');
+                if (inputElement) {
+                    const inputName = inputElement.name;
+                    const newInputName = inputName.replace(/\[\d+\]/, `[${idx}]`);
+                    inputElement.name = newInputName;
+                }
+            });
+            index = sections.length;
+        }
+    </script>
+}
