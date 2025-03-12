@@ -7,66 +7,247 @@
     <!--begin::Post-->
     <div class="content flex-column-fluid" id="kt_content">
         <!--begin::Row-->
-        <div class="row">
+        <div class="">
             <!--begin::Col-->
-            <div>
-                <!--begin::Tiles Widget 2-->
-                <a asp-controller="ImportBook" class="card h-90px bgi-no-repeat mb-5 mb-lg-10" style="background-color: #1B283F;  background-size: cover; background-image:url('/assets/images/img-12.jpg')">
-                    <!--begin::Body-->
-                    <div class="card-body d-flex flex-column justify-content-between">
+            <div class="row justify-content-between">
+                <a asp-controller="ImportBook" class="card col-5 h-150px bgi-no-repeat bgi-size-cover bgi-position-y-center h-150px mb-5 mb-lg-10">
+                    <!--begin::Header-->
+                    <div class="card-header pt-5">
                         <!--begin::Title-->
-                        <h1 class="text-end text-black fw-bold fs-1 mb-0 mt-5">
-                            وارد
-                        </h1>
+                        <div class="card-title col-12 d-flex flex-column">
+                            <!--begin::Info-->
+                            <div class="align-items-center col-12 d-flex justify-content-center">
+                                <!--begin::Amount-->
+                                <div class="col-6 fs-2hx fw-bold lh-1 ls-n2 me-2 text-gray-900">وارد</div>
+                                <div id="importNum" class="col-6 fs-2hx fw-bold lh-1 ls-n2 me-2 text-gray-900">0</div>
+                                <!--end::Amount-->
+                            </div>
+                            <!--end::Info-->
+                        </div>
                         <!--end::Title-->
                     </div>
-                    <!--end::Body-->
+                    <!--end::Header-->
+                    <!--begin::Card body-->
+                    <div class="card-body pt-2 pb-4 d-flex align-items-center">
+                        <!--begin::Labels-->
+                        <div class="d-flex flex-column content-justify-center w-100">
+                            <!--begin::Label-->
+                            <div class="d-flex fs-6 fw-semibold align-items-center">
+                                <!--begin::Bullet-->
+                                <div class="bullet w-8px h-6px rounded-2 bg-primary me-3"></div>
+                                <!--end::Bullet-->
+                                <!--begin::Label-->
+                                <div class="text-gray-500 flex-grow-1 me-4">منجزه</div>
+                                <!--end::Label-->
+                                <!--begin::Stats-->
+                                <div id="importNumPassed" class="fw-bolder text-gray-700 text-xxl-end">0</div>
+                                <!--end::Stats-->
+                            </div>
+                            <!--end::Label-->
+                            <!--begin::Label-->
+                            <div class="d-flex fs-6 fw-semibold align-items-center my-3">
+                                <!--begin::Bullet-->
+                                <div class="bullet w-8px h-6px rounded-2 bg-danger me-3"></div>
+                                <!--end::Bullet-->
+                                <!--begin::Label-->
+                                <div class="text-gray-500 flex-grow-1 me-4">فى الانتظار</div>
+                                <!--end::Label-->
+                                <!--begin::Stats-->
+                                <div id="importNumUnPassed" class="fw-bolder text-gray-700 text-xxl-end">0</div>
+                                <!--end::Stats-->
+                            </div>
+                            <!--end::Label-->
+                        </div>
+                        <!--end::Labels-->
+                    </div>
+                    <!--end::Card body-->
+                </a>
+                <a asp-controller="ExportBook" class="card col-5 h-150px bgi-no-repeat bgi-size-cover bgi-position-y-center h-150px mb-5 mb-lg-10">
+                    <!--begin::Header-->
+                    <div class="card-header pt-5">
+                        <!--begin::Title-->
+                        <div class="card-title col-12 d-flex flex-column">
+                            <!--begin::Info-->
+                            <div class="align-items-center col-12 d-flex justify-content-center">
+                                <!--begin::Amount-->
+                                <div class="col-6 fs-2hx fw-bold lh-1 ls-n2 me-2 text-gray-900">صادر</div>
+                                <div id="exportNum" class="col-6 fs-2hx fw-bold lh-1 ls-n2 me-2 text-gray-900">0</div>
+                                <!--end::Amount-->
+                            </div>
+                            <!--end::Info-->
+                        </div>
+                        <!--end::Title-->
+                    </div>
+                    <!--end::Header-->
+                    <!--begin::Card body-->
+                    <div class="card-body pt-2 pb-4 d-flex align-items-center">
+                        <!--begin::Labels-->
+                        <div class="d-flex flex-column content-justify-center w-100">
+                            <!--begin::Label-->
+                            <div class="d-flex fs-6 fw-semibold align-items-center">
+                                <!--begin::Bullet-->
+                                <div class="bullet w-8px h-6px rounded-2 bg-primary me-3"></div>
+                                <!--end::Bullet-->
+                                <!--begin::Label-->
+                                <div class="text-gray-500 flex-grow-1 me-4">منجزه</div>
+                                <!--end::Label-->
+                                <!--begin::Stats-->
+                                <div id="exportNumPassed" class="fw-bolder text-gray-700 text-xxl-end">0</div>
+                                <!--end::Stats-->
+                            </div>
+                            <!--end::Label-->
+                            <!--begin::Label-->
+                            <div class="d-flex fs-6 fw-semibold align-items-center my-3">
+                                <!--begin::Bullet-->
+                                <div class="bullet w-8px h-6px rounded-2 bg-danger me-3"></div>
+                                <!--end::Bullet-->
+                                <!--begin::Label-->
+                                <div class="text-gray-500 flex-grow-1 me-4">فى الانتظار</div>
+                                <!--end::Label-->
+                                <!--begin::Stats-->
+                                <div id="exportNumUnPassed" class="fw-bolder text-gray-700 text-xxl-end">0</div>
+                                <!--end::Stats-->
+                            </div>
+                            <!--end::Label-->
+                        </div>
+                        <!--end::Labels-->
+                    </div>
+                    <!--end::Card body-->
+                </a>
+                </div>
+            <div class="row justify-content-between">
+                <a asp-controller="Readings" class="card col-5 h-150px bgi-no-repeat bgi-size-cover bgi-position-y-center h-150px mb-5 mb-lg-10">
+                    <!--begin::Header-->
+                    <div class="card-header pt-5">
+                        <!--begin::Title-->
+                        <div class="card-title col-12 d-flex flex-column">
+                            <!--begin::Info-->
+                            <div class="align-items-center col-12 d-flex justify-content-center">
+                                <!--begin::Amount-->
+                                <div class="col-6 fs-2hx fw-bold lh-1 ls-n2 me-2 text-gray-900">مطالعه</div>
+                                <div id="readingsNum" class="col-6 fs-2hx fw-bold lh-1 ls-n2 me-2 text-gray-900">0</div>
+                                <!--end::Amount-->
+                            </div>
+                            <!--end::Info-->
+                        </div>
+                        <!--end::Title-->
+                    </div>
+                    <!--end::Header-->
+                    <!--begin::Card body-->
+                    <div class="card-body pt-2 pb-4 d-flex align-items-center">
+                        <!--begin::Labels-->
+                        <div class="d-flex flex-column content-justify-center w-100">
+                            <!--begin::Label-->
+                            <div class="d-flex fs-6 fw-semibold align-items-center">
+                                <!--begin::Bullet-->
+                                <div class="bullet w-8px h-6px rounded-2 bg-primary me-3"></div>
+                                <!--end::Bullet-->
+                                <!--begin::Label-->
+                                <div class="text-gray-500 flex-grow-1 me-4">منجزه</div>
+                                <!--end::Label-->
+                                <!--begin::Stats-->
+                                <div id="readingsNumPassed" class="fw-bolder text-gray-700 text-xxl-end">0</div>
+                                <!--end::Stats-->
+                            </div>
+                            <!--end::Label-->
+                            <!--begin::Label-->
+                            <div class="d-flex fs-6 fw-semibold align-items-center my-3">
+                                <!--begin::Bullet-->
+                                <div class="bullet w-8px h-6px rounded-2 bg-danger me-3"></div>
+                                <!--end::Bullet-->
+                                <!--begin::Label-->
+                                <div class="text-gray-500 flex-grow-1 me-4">فى الانتظار</div>
+                                <!--end::Label-->
+                                <!--begin::Stats-->
+                                <div id="readingsNumUnPassed" class="fw-bolder text-gray-700 text-xxl-end">0</div>
+                                <!--end::Stats-->
+                            </div>
+                            <!--end::Label-->
+                        </div>
+                        <!--end::Labels-->
+                    </div>
+                    <!--end::Card body-->
+                </a>
+                <a asp-controller="Activity" class="card col-5 h-150px bgi-no-repeat bgi-size-cover bgi-position-y-center h-150px mb-5 mb-lg-10">
+                    <!--begin::Header-->
+                    <div class="card-header pt-5">
+                        <!--begin::Title-->
+                        <div class="card-title col-12 d-flex flex-column">
+                            <!--begin::Info-->
+                            <div class="align-items-center col-12 d-flex justify-content-center">
+                                <!--begin::Amount-->
+                                <div class="col-6 fs-2hx fw-bold lh-1 ls-n2 me-2 text-gray-900">سلسله</div>
+                                <div id="activityNum" class="col-6 fs-2hx fw-bold lh-1 ls-n2 me-2 text-gray-900">0</div>
+                                <!--end::Amount-->
+                            </div>
+                            <!--end::Info-->
+                        </div>
+                        <!--end::Title-->
+                    </div>
+                    <!--end::Header-->
+                    <!--begin::Card body-->
+                    <div class="card-body pt-2 pb-4 d-flex align-items-center">
+                        <!--begin::Labels-->
+                        <div class="d-flex flex-column content-justify-center w-100">
+                            <!--begin::Label-->
+                            <div class="d-flex fs-6 fw-semibold align-items-center">
+                                <!--begin::Bullet-->
+                                <div class="bullet w-8px h-6px rounded-2 bg-primary me-3"></div>
+                                <!--end::Bullet-->
+                                <!--begin::Label-->
+                                <div class="text-gray-500 flex-grow-1 me-4">منجزه</div>
+                                <!--end::Label-->
+                                <!--begin::Stats-->
+                                <div class="fw-bolder text-gray-700 text-xxl-end">----</div>
+                                <!--end::Stats-->
+                            </div>
+                            <!--end::Label-->
+                            <!--begin::Label-->
+                            <div class="d-flex fs-6 fw-semibold align-items-center my-3">
+                                <!--begin::Bullet-->
+                                <div class="bullet w-8px h-6px rounded-2 bg-danger me-3"></div>
+                                <!--end::Bullet-->
+                                <!--begin::Label-->
+                                <div class="text-gray-500 flex-grow-1 me-4">فى الانتظار</div>
+                                <!--end::Label-->
+                                <!--begin::Stats-->
+                                <div class="fw-bolder text-gray-700 text-xxl-end">----</div>
+                                <!--end::Stats-->
+                            </div>
+                            <!--end::Label-->
+                        </div>
+                        <!--end::Labels-->
+                    </div>
+                    <!--end::Card body-->
                 </a>
 
-                <!--end::Tiles Widget 2-->
-                <!--begin::Tiles Widget 2-->
-                <a asp-controller="ExportBook" class="card h-90px bgi-no-repeat mb-5 mb-lg-10" style="background-color: #1B283F; background-size: cover; background-image:url('/assets/images/img-12.jpg')">
-                    <!--begin::Body-->
-                    <div class="card-body d-flex flex-column justify-content-between">
-                        <!--begin::Title-->
-                        <h1 class="text-end text-black fw-bold fs-1 mb-0 mt-5">
-                            صادر
-                        </h1>
-                        <!--end::Title-->
-                    </div>
-                    <!--end::Body-->
-                </a>
-                <!--end::Tiles Widget 2-->
-                <!--begin::Tiles Widget 2-->
-                <a asp-controller="Readings" class="card h-90px bgi-no-repeat mb-5 mb-lg-10" style="background-color: #1B283F; background-size: cover; background-image:url('/assets/images/img-12.jpg')">
-                    <!--begin::Body-->
-                    <div class="card-body d-flex flex-column justify-content-between">
-                        <!--begin::Title-->
-                        <h1 class="text-end text-black fw-bold fs-1 mb-0 mt-5">
-                            مطالعه
-                        </h1>
-                        <!--end::Title-->
-                    </div>
-                    <!--end::Body-->
-                </a>
-                <!--end::Tiles Widget 2-->
-                <!--begin::Tiles Widget 2-->
-                <a asp-controller="Activity" class="card h-90px bgi-no-repeat mb-5 mb-lg-10" style="background-color: #1B283F; background-size: cover; background-image:url('/assets/images/img-12.jpg')">
-                    <!--begin::Body-->
-                    <div class="card-body d-flex flex-column justify-content-between">
-                        <!--begin::Title-->
-                        <h1 class="text-end text-black fw-bold fs-1 mb-0 mt-5">
-                            سلسله
-                        </h1>
-                        <!--end::Title-->
-                    </div>
-                    <!--end::Body-->
-                </a>
-                <!--end::Tiles Widget 2-->
             </div>
             <!--end::Col-->
         </div>
         <!--end::Row-->
     </div>
     <!--end::Post-->
+
 </div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '/Home/GetCounts',
+                type: 'GET',
+                success: function (data) {
+                    $('#importNum').text(data.importNum);
+                    $('#importNumPassed').text(data.importNumPassed);
+                    $('#importNumUnPassed').text(data.importNumUnPassed);
+                    $('#exportNum').text(data.exportNum);
+                    $('#exportNumPassed').text(data.exportNumPassed);
+                    $('#exportNumUnPassed').text(data.exportNumUnPassed);
+                    $('#readingsNum').text(data.readingsNum);
+                    $('#readingsNumPassed').text(data.readingsNumPassed);
+                    $('#readingsNumUnPassed').text(data.readingsNumUnPassed);
+                    $('#activityNum').text(data.activityNum);
+                }
+            });
+        });
+    </script>
+}
