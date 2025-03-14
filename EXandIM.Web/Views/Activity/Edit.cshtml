@@ -94,7 +94,7 @@
                                                         {
                                                             @if (export.Id == book.BookId)
                                                             {
-                                                                <option value="@export.Id" selected>@export.Title</option>
+                                                                <option value="@export.Id" selected data-book-number="@export.BookNumber">@export.Title</option>
                                                             }
                                                             else
                                                             {
@@ -133,7 +133,7 @@
                                                         {
                                                             @if (Import.Id == book.BookId)
                                                             {
-                                                                <option value="@Import.Id" selected>@Import.Title</option>
+                                                                <option value="@Import.Id" selected data-book-number="@Import.BookNumber">@Import.Title</option>
                                                             }
                                                             else
                                                             {
@@ -297,12 +297,12 @@
                                 <div class="col-lg-8">
                                     <div class="row">
                                         <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
-                                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه صادر..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه صادر..." class="js-select2 form-select form-select-solid form-select-lg fw-semibold"
                                                     required name="Books[${index}].BookId">
                                                 <option value="">اضافه صادر...</option>
         @foreach (var export in ViewBag.ExportBooks)
         {
-                                                        <option value="@export.Id">@export.Title</option>
+                                                                <option value="@export.Id" data-book-number="@export.BookNumber">@export.Title</option>
         }
                                             </select>
                                         </div>
@@ -315,7 +315,11 @@
                     `;
             document.getElementById("New").insertAdjacentHTML('beforeend', newExportHtml);
             index++;
-        }
+        $(".js-select2").select2({
+                          matcher: customMatcher,
+                          placeholder: "اضافه صادر...",
+                          allowClear: true
+                      });        }
 
         function addImport() {
             var newImportHtml = `
@@ -325,12 +329,12 @@
                                 <div class="col-lg-8">
                                     <div class="row">
                                         <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
-                                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه وارد..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه وارد..." class="js-select2 form-select form-select-solid form-select-lg fw-semibold"
                                                     required name="Books[${index}].BookId">
                                                 <option value="">اضافه وارد...</option>
         @foreach (var Import in ViewBag.ImportBooks)
         {
-                                                        <option value="@Import.Id">@Import.Title</option>
+                                                            <option value="@Import.Id" data-book-number="@Import.BookNumber">@Import.Title</option>
         }
                                             </select>
                                         </div>
@@ -343,6 +347,11 @@
                     `;
             document.getElementById("New").insertAdjacentHTML('beforeend', newImportHtml);
             index++;
+             $(".js-select2").select2({
+                   matcher: customMatcher,
+                   placeholder: "اضافه وارد...",
+                   allowClear: true
+               });
         }
 
         function addReading() {
@@ -353,7 +362,7 @@
                                 <div class="col-lg-8">
                                     <div class="row">
                                         <div class="col-lg-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
-                                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه مطالعه..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                            <select aria-label="Select a Country" data-control="select2" data-placeholder="اضافه مطالعه..." class="js-select2 form-select form-select-solid form-select-lg fw-semibold"
                                                     required name="Books[${index}].ReadingId">
                                                 <option value="">اضافه مطالعه...</option>
         @foreach (var Reading in ViewBag.ReadingsBooks)
@@ -371,6 +380,7 @@
                     `;
             document.getElementById("New").insertAdjacentHTML('beforeend', newReadingHtml);
             index++;
+             $(".js-select2").select2();
         }
 
         function addProcedure() {
@@ -425,5 +435,24 @@
             });
             index = sections.length;
         }
+                function customMatcher(params, data) {
+            if ($.trim(params.term) === '') {
+                return data;
+            }
+
+            // Convert search term to lowercase
+            var searchTerm = params.term.toLowerCase();
+
+            // Ensure values are strings before using .toLowerCase()
+            var title = (data.text || '').toLowerCase();
+            var bookNumber = String($(data.element).data('book-number') || '').toLowerCase();
+
+            if (title.includes(searchTerm) || bookNumber.includes(searchTerm)) {
+                return data;
+            }
+
+            return null;
+        }
+
     </script>
 }
