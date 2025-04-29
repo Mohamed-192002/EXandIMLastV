@@ -80,6 +80,21 @@
 
         columns.push({ "data": "bookNumber", "name": "BookNumber" });
     }
+    if (tbody.data('controller') === "ExportBook") {
+        columns.push({ "data": "referToBookNumber", "name": "ReferToBookNumber" });
+        columns.push({
+            "className": 'text-center',
+            "data": "referDate",
+            "name": "ReferDate",
+            "render": function (data, type, row) {
+                if (data != null) {
+                    return moment(row.referDate).format('ll')
+                }
+                else
+                    return "";
+            }
+        });
+    }
     columns.push({
         "className": 'text-center',
         "data": "notes",
