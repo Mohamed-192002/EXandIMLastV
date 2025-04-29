@@ -8,7 +8,7 @@ namespace EXandIM.Web.Core.Models
         public string Title { get; set; } = null!;
         public string BookNumber { get; set; } = null!;
         public DateTime BookDate { get; set; }
-        public ICollection<Entity> Entities{ get; set; } = new List<Entity>();
+        public ICollection<Entity> Entities { get; set; } = new List<Entity>();
         public bool Passed { get; set; } = default!;
 
         public ICollection<SubEntity> SubEntities { get; set; } = new List<SubEntity>();
@@ -25,6 +25,11 @@ namespace EXandIM.Web.Core.Models
         public ApplicationUser? User { get; set; }
         public ICollection<Team> Teams { get; set; } = new List<Team>();
         public ICollection<BookFile> BookImages { get; set; } = new List<BookFile>();
+
+        public bool IsReferTo { get; set; } = false;
+        public string? ReferToBookNumber { get; set; }
+        public DateTime? ReferDate { get; set; }
+
     }
     public class BookFile
     {

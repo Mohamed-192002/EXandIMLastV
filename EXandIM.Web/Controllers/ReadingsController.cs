@@ -173,7 +173,7 @@ namespace EXandIM.Web.Controllers
                 return BadRequest("لا يمكن العثور على المستخدم");
             var readings = _context.Readings
                 .Include(b => b.Entities).Include(b => b.SubEntities).Include(b => b.SecondSubEntities)
-                .Include(r => r.ReadingImages).FirstOrDefault(b => b.Id == model.Id);
+                .Include(r => r.ReadingImages).Include(r => r.User).FirstOrDefault(b => b.Id == model.Id);
 
             if (readings is null)
                 return NotFound();

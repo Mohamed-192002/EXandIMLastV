@@ -22,6 +22,9 @@ namespace EXandIM.Web.Core.ViewModels
         public List<string> Teams { get; set; }
 
         public bool Passed { get; set; }
+        public bool IsReferTo { get; set; }
+        public string? ReferToBookNumber { get; set; }
+        public DateTime? ReferDate { get; set; }
 
     }
     public class BookFileDisplay

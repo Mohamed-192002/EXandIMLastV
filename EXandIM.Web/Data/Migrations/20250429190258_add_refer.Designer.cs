@@ -4,6 +4,7 @@ using EXandIM.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EXandIM.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250429190258_add_refer")]
+    partial class add_refer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,8 +245,8 @@ namespace EXandIM.Web.Data.Migrations
                     b.Property<bool>("Passed")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("ReferDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("ReferDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("ReferToBookNumber")
                         .HasColumnType("nvarchar(max)");
