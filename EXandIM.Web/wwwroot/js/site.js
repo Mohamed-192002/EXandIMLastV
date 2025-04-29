@@ -129,7 +129,6 @@ $(document).ready(function () {
     KTUtil.onDOMContentLoaded(function () {
         KTDatatables.init();
     });
-    //Handle bootstrap modal
     $('body').delegate('.js-render-modal', 'click', function () {
         var btn = $(this);
         var modal = $('#Modal');
@@ -159,6 +158,41 @@ $(document).ready(function () {
         $('#SignOut').submit();
     });
     //Handle Toggle Status
+    $('body').delegate('.js-delete-user', 'click', function () {
+        var btn = $(this);
+
+        bootbox.confirm({
+            message: "هل متأكد من حذف المستخدم؟",
+            buttons: {
+                confirm: {
+                    label: 'نعم',
+                    className: 'btn-danger'
+                },
+                cancel: {
+                    label: 'لا',
+                    className: 'btn-secondary'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    $.post({
+                        url: btn.data('url'),
+                        data: {
+                            '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (lastUpdatedOn) {
+                            showSuccessMessage();
+                            location.reload();
+                        },
+                        error: function () {
+                            showErrorMessage("لا يمكن حذف هذا المستخدم");
+                        }
+                    });
+                }
+            }
+        });
+    });
+
     $('body').delegate('.js-toggle-status', 'click', function () {
         var btn = $(this);
 
@@ -224,7 +258,6 @@ $(document).ready(function () {
                             '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
                         },
                         success: function () {
-                            showSuccessMessage();
                             location.reload();
                         },
                         error: function () {

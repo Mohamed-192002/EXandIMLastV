@@ -206,7 +206,7 @@ namespace EXandIM.Web.Controllers
                 model.ImageThumbnailUrl = user.ImageThumbnailUrl;
             }
             user = _mapper.Map(model, user);
-            
+
             var result = await _userManager.UpdateAsync(user);
 
             if (result.Succeeded)
@@ -351,7 +351,24 @@ namespace EXandIM.Web.Controllers
             await _userManager.UpdateAsync(user);
             return Ok();
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
 
+            if (user is null)
+                return NotFound();
+            try
+            {
+                await _userManager.DeleteAsync(user);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public async Task<IActionResult> AllowUserName(UserFormViewModel model)
         {
             var user = await _userManager.FindByNameAsync(model.UserName);
