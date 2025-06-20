@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EXandIM.Web.Controllers
 {
-    [Authorize(Roles = AppRoles.SuperAdmin)]
+    [Authorize(Roles = AppRoles.SuperAdmin + "," + AppRoles.Admin)]
     public class SubEntityController : Controller
     {
         private readonly ApplicationDbContext _context;

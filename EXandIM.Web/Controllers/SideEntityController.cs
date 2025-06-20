@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EXandIM.Web.Controllers
 {
-    [Authorize(Roles = AppRoles.SuperAdmin)]
+    [Authorize(Roles = AppRoles.SuperAdmin + "," + AppRoles.Admin)]
     public class SideEntityController(ApplicationDbContext context, IMapper mapper) : Controller
     {
         private readonly ApplicationDbContext _context = context;

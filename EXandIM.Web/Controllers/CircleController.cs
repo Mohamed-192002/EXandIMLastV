@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
-using EXandIM.Web.Data;
-using EXandIM.Web.Filters;
+using EXandIM.Web.Core;
 using EXandIM.Web.Core.Models;
 using EXandIM.Web.Core.ViewModels;
+using EXandIM.Web.Data;
+using EXandIM.Web.Filters;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EXandIM.Web.Controllers
 {
+    [Authorize(Roles = AppRoles.SuperAdmin + "," + AppRoles.Admin)]
     public class CircleController(ApplicationDbContext context, IMapper mapper) : Controller
     {
         private readonly ApplicationDbContext _context = context;

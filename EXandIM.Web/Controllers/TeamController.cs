@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EXandIM.Web.Controllers
 {
-    [Authorize(Roles = AppRoles.SuperAdmin)]
+    [Authorize(Roles = AppRoles.SuperAdmin + "," + AppRoles.Admin)]
     public class TeamController(ApplicationDbContext context, IMapper mapper) : Controller
     {
         private readonly ApplicationDbContext _context = context;
