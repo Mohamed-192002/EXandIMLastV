@@ -109,6 +109,24 @@
         }
     });
     columns.push({ "className": 'text-center', "data": "userFullName", "name": "UserFullName" });
+    var isSuperAdmin = $('#isSuperAdmin').val() === 'true';
+    if (isSuperAdmin) {
+        columns.push({
+            "data": "isHidden", "name": "IsHidden", "orderable": false,
+            render: function (data, type, row) {
+                const lockIcon = row.isHidden ? "🔒" : "🔓";
+
+                return `
+            <a href="javascript:;" 
+               class="menu-link flex-stack px-3 js-toggle-Hidden" 
+               data-url="/${tbody.data('controller')}/ToggleHidden/${row.id}" 
+               data-message="هل متأكد من الاخفاء؟"
+               style="font-size: 24px;">
+               ${lockIcon}
+            </a>`;
+            }
+        });
+    }
 
     columns.push(
         {

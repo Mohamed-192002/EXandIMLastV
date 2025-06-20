@@ -1,4 +1,5 @@
-﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
+﻿@using EXandIM.Web.Core
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
 
 @{
     ViewData["Title"] = "الصادر";
@@ -93,6 +94,8 @@
             </div>
         </div>
     </div>
+    <input type="hidden" id="isSuperAdmin" value="@User.IsInRole(AppRoles.SuperAdmin).ToString().ToLower()" />
+
     <div class="card-body fs-5 pt-0">
         <div class="table-responsive">
             <table id="Books" class="text-center table table-row-dashed table-row-gray-300 gy-2">
@@ -111,6 +114,10 @@
                         <th>تاريخ الكتاب المشار اليه</th>
                         <th>الملاحظات</th>
                         <th>المستخدم</th>
+                        @if (User.IsInRole(AppRoles.SuperAdmin))
+                        {
+                            <th class="js-no-export" style="text-align:center">اخفاء / اظهار</th>
+                        }
                         <th class="text-start">فعل</th>
                     </tr>
                 </thead>

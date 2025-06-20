@@ -30,6 +30,8 @@ namespace EXandIM.Web.Core.Models
         public string? ReferToBookNumber { get; set; }
         public DateTime? ReferDate { get; set; }
 
+        public bool IsHidden { get; set; } = false;
+
     }
     public class BookFile
     {

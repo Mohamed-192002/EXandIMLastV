@@ -10,6 +10,7 @@ namespace EXandIM.Web.Core.ViewModels
         public ApplicationUser? User { get; set; }
         public ICollection<ItemInActivity>? Books { get; set; }
         public ICollection<ItemInActivity>? newBooks { get; set; }
-      //  public List<int>? SelectedTeams { get; set; }
+        public bool IsHidden { get; set; }
+        //  public List<int>? SelectedTeams { get; set; }
     }
 }

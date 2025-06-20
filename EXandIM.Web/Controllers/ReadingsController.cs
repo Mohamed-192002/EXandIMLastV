@@ -376,11 +376,24 @@ namespace EXandIM.Web.Controllers
                 return BadRequest("يجب تسجيل الدخول اولا");
             var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
             IQueryable<Reading> readings;
-            readings = _context.Readings
+            if (User.IsInRole(AppRoles.SuperAdmin))
+            {
+                readings = _context.Readings
                 .Include(b => b.Entities)
                 .Include(b => b.SubEntities)
                 .Include(b => b.SecondSubEntities)
                 .Include(b => b.User);
+            }
+            else
+            {
+                readings = _context.Readings
+                    .Where(r => !r.IsHidden)
+                    .Include(b => b.Entities)
+                    .Include(b => b.SubEntities)
+                    .Include(b => b.SecondSubEntities)
+                    .Include(b => b.User);
+            }
+           
 
             if (!string.IsNullOrEmpty(searchValue))
                 readings = readings.Where(b =>
@@ -418,11 +431,23 @@ namespace EXandIM.Web.Controllers
 
             var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
             IQueryable<Reading> readings;
-            readings = _context.Readings
+            if (User.IsInRole(AppRoles.SuperAdmin))
+            {
+                readings = _context.Readings
                 .Include(b => b.Entities)
                 .Include(b => b.SubEntities)
                 .Include(b => b.SecondSubEntities)
                 .Include(b => b.User);
+            }
+            else
+            {
+                readings = _context.Readings
+                    .Where(r => !r.IsHidden)
+                    .Include(b => b.Entities)
+                    .Include(b => b.SubEntities)
+                    .Include(b => b.SecondSubEntities)
+                    .Include(b => b.User);
+            }
 
             if (fromDate.HasValue)
                 readings = readings.Where(x => x.BookDate >= fromDate.Value);
@@ -452,6 +477,24 @@ namespace EXandIM.Web.Controllers
             var isAllowed = reading is null || reading.Id.Equals(model.Id);
 
             return Json(isAllowed);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleHidden(int id)
+        {
+            var userId = GetAuthenticatedUser();
+            if (userId == null || !User.IsInRole(AppRoles.SuperAdmin))
+                return BadRequest("يجب تسجيل الدخول اولا");
+
+            var book = _context.Readings.Find(id);
+            if (book is null) return NotFound();
+
+            book.IsHidden = !book.IsHidden;
+
+            _context.Update(book);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }

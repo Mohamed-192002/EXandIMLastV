@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ActivityBook>
+﻿@using EXandIM.Web.Core
+@model IEnumerable<ActivityBook>
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
 
 @{
@@ -45,6 +46,10 @@
                         <th style="text-align:start">المستخدم</th>
                         <th class="js-no-export" style="text-align:center">تفاصيل</th>
                         <th class="js-no-export" style="text-align:center">حذف</th>
+                        @if (User.IsInRole(AppRoles.SuperAdmin))
+                        {
+                            <th class="js-no-export" style="text-align:center">اخفاء / اظهار</th>
+                        }
                         <th class="js-no-export" style="text-align:end">تعديل</th>
                     </tr>
                 </thead>

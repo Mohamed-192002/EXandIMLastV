@@ -21,6 +21,7 @@
 
         public List<string> Teams { get; set; }
         public bool Passed { get; set; }
+        public bool IsHidden { get; set; }
 
     }
 }

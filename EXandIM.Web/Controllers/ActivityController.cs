@@ -40,7 +40,7 @@ namespace EXandIM.Web.Controllers
             //}
             else
             {
-                Activities = [.. _context.Activities.Include(b => b.User).Where(b => b.User!.Id == userId)];
+                Activities = [.. _context.Activities.Include(b => b.User).Where(b => b.User!.Id == userId && !b.IsHidden)];
             }
             return View(Activities);
         }
@@ -264,7 +264,7 @@ namespace EXandIM.Web.Controllers
             if (User.IsInRole(AppRoles.SuperAdmin))
                 Books = _context.Books.Where(b => b.IsExport).OrderBy(a => a.Title).ToList();
             else
-                Books = _context.Books.Where(b => b.IsExport && b.Teams.Any(team => team.Id == user.Team!.Id)).ToList();
+                Books = _context.Books.Where(b => b.IsExport && b.Teams.Any(team => team.Id == user.Team!.Id) && !b.IsHidden).ToList();
             return Books;
         }
 
@@ -274,7 +274,7 @@ namespace EXandIM.Web.Controllers
             if (User.IsInRole(AppRoles.SuperAdmin))
                 Books = _context.Books.Where(b => !b.IsExport).OrderBy(a => a.Title).ToList();
             else
-                Books = _context.Books.Where(b => !b.IsExport && b.Teams.Any(team => team.Id == user.Team!.Id)).ToList();
+                Books = _context.Books.Where(b => !b.IsExport && b.Teams.Any(team => team.Id == user.Team!.Id) && !b.IsHidden).ToList();
             return Books;
         }
 
@@ -284,7 +284,7 @@ namespace EXandIM.Web.Controllers
             if (User.IsInRole(AppRoles.SuperAdmin))
                 readings = _context.Readings.OrderBy(a => a.Title).ToList();
             else
-                readings = _context.Readings.ToList();
+                readings = _context.Readings.Where(r => !r.IsHidden).ToList();
             return readings;
         }
 
@@ -337,7 +337,23 @@ namespace EXandIM.Web.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleHidden(int id)
+        {
+            var userId = GetAuthenticatedUser();
+            if (userId == null || !User.IsInRole(AppRoles.SuperAdmin))
+                return BadRequest("يجب تسجيل الدخول اولا");
 
+            var activity = _context.Activities.Find(id);
+            if (activity is null) return NotFound();
+
+            activity.IsHidden = !activity.IsHidden;
+
+            _context.Update(activity);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
 
         //private List<Team> GetTeams(ApplicationUser user1)
         //{

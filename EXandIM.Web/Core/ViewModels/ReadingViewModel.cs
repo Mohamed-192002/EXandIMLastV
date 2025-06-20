@@ -13,5 +13,6 @@
         public List<string>? SubEntities { get; set; }
         public List<string>? SecondSubEntities { get; set; }
         public IList<BookFileDisplay> ExistingFiles { get; set; } = new List<BookFileDisplay>();
+        public bool IsHidden { get; set; }
     }
 }

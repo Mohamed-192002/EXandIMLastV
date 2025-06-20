@@ -541,7 +541,7 @@ namespace EXandIM.Web.Controllers
                .Include(b => b.SecondSubEntities)
                .Include(b => b.SideEntity)
               .Include(b => b.User)
-              .Where(b => b.IsExport == false && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted);
+              .Where(b => b.IsExport == false && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted && !b.IsHidden);
             }
             else
             {
@@ -551,7 +551,7 @@ namespace EXandIM.Web.Controllers
                .Include(b => b.SecondSubEntities)
                .Include(b => b.SideEntity)
               .Include(b => b.User)
-               .Where(b => b.IsExport == false && b.User!.Id == userId && b.IsAccepted);
+               .Where(b => b.IsExport == false && b.User!.Id == userId && b.IsAccepted && !b.IsHidden);
             }
 
             if (!string.IsNullOrEmpty(searchValue))
@@ -610,7 +610,7 @@ namespace EXandIM.Web.Controllers
                .Include(b => b.SecondSubEntities)
                .Include(b => b.SideEntity)
               .Include(b => b.User)
-              .Where(b => b.IsExport == false && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted);
+              .Where(b => b.IsExport == false && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted && !b.IsHidden);
             }
             else
             {
@@ -620,7 +620,7 @@ namespace EXandIM.Web.Controllers
                .Include(b => b.SecondSubEntities)
                .Include(b => b.SideEntity)
               .Include(b => b.User)
-               .Where(b => b.IsExport == false && b.User!.Id == userId && b.IsAccepted);
+               .Where(b => b.IsExport == false && b.User!.Id == userId && b.IsAccepted && !b.IsHidden);
             }
 
             if (fromDate.HasValue)
@@ -684,7 +684,7 @@ namespace EXandIM.Web.Controllers
                .Include(b => b.SecondSubEntities)
                .Include(b => b.SideEntity)
                .Include(b => b.Teams).ThenInclude(t => t.Circle)
-              .Where(b => !b.IsExport && b.Teams.Any(t => t.CircleId == user.CircleId) && !b.IsAccepted);
+              .Where(b => !b.IsExport && b.Teams.Any(t => t.CircleId == user.CircleId) && !b.IsAccepted && !b.IsHidden);
             }
 
 
@@ -750,6 +750,24 @@ namespace EXandIM.Web.Controllers
             var isAllowed = book is null || book.Id.Equals(model.Id);
 
             return Json(isAllowed);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleHidden(int id)
+        {
+            var userId = GetAuthenticatedUser();
+            if (userId == null || !User.IsInRole(AppRoles.SuperAdmin))
+                return BadRequest("يجب تسجيل الدخول اولا");
+
+            var book = _context.Books.Find(id);
+            if (book is null) return NotFound();
+
+            book.IsHidden = !book.IsHidden;
+
+            _context.Update(book);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }

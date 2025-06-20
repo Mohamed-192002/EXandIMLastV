@@ -25,6 +25,7 @@ namespace EXandIM.Web.Core.ViewModels
         public bool IsReferTo { get; set; }
         public string? ReferToBookNumber { get; set; }
         public DateTime? ReferDate { get; set; }
+        public bool IsHidden { get; set; }
 
     }
     public class BookFileDisplay

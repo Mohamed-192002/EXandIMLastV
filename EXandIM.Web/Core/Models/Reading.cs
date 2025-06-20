@@ -19,6 +19,8 @@ namespace EXandIM.Web.Core.Models
         public ICollection<SecondSubEntity> SecondSubEntities { get; set; } = new List<SecondSubEntity>();
 
         public ICollection<ReadingFile> ReadingImages { get; set; } = new List<ReadingFile>();
+        public bool IsHidden { get; set; } = false;
+
     }
     public class ReadingFile
     {

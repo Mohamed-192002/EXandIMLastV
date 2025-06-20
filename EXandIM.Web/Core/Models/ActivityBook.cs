@@ -12,6 +12,8 @@ namespace EXandIM.Web.Core.Models
         public string UserId { get; set; }
         public ApplicationUser? User { get; set; }
         public ICollection<ItemInActivity> Books { get; set; }
+        public bool IsHidden { get; set; } = false;
+
         //[Required(ErrorMessage = "الاقسام مطلوب")]
         //[Display(Name = "الاقسام")]
         //public ICollection<Team> Teams { get; set; }

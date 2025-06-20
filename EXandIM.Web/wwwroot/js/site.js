@@ -233,7 +233,41 @@ $(document).ready(function () {
             }
         });
     });
+    $('body').delegate('.js-toggle-Hidden', 'click', function () {
+        var btn = $(this);
 
+        bootbox.confirm({
+            message: "هل متأكد من التغير؟",
+            buttons: {
+                confirm: {
+                    label: 'نعم',
+                    className: 'btn-danger'
+                },
+                cancel: {
+                    label: 'لا',
+                    className: 'btn-secondary'
+                }
+            },
+            callback: function (result) {
+                if (result) {
+                    $.post({
+                        url: btn.data('url'),
+                        data: {
+                            '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (lastUpdatedOn) {
+                            const isHidden = btn.text().trim() === "🔒";
+                            btn.html(isHidden ? "🔓" : "🔒");
+                            showSuccessMessage();
+                        },
+                        error: function () {
+                            showErrorMessage();
+                        }
+                    });
+                }
+            }
+        });
+    });
     //Handle Confirm
     $('body').delegate('.js-confirm', 'click', function () {
         var btn = $(this);

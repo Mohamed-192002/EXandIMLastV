@@ -1,4 +1,5 @@
-﻿@model ActivityBook
+﻿@using EXandIM.Web.Core
+@model ActivityBook
 <tr>
     <td>@Model.Title</td>
     <td>@Model.User.FullName</td>
@@ -7,11 +8,21 @@
             التفاصيل
         </a>
     <td style="text-align:center">
-            <a href="javascript:;" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger js-confirm"
+        <a href="javascript:;" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger js-confirm"
            data-message="هل متأكد من حذف هذه السلسله؟" data-url="/Activity/Delete/@Model.Id">
             حذف
         </a>
     </td>
+    @if (User.IsInRole(AppRoles.SuperAdmin))
+    {
+        <td style="text-align:center">
+            <a href="javascript:;" class="menu-link flex-stack px-3 js-toggle-Hidden"
+               data-url="/Activity/ToggleHidden/@Model.Id" data-message="هل متأكد من الاخفاء؟"
+               style="font-size: 24px;">
+                @(Model.IsHidden ? "🔒" : "🔓")
+            </a>
+        </td>
+    }
     <td style="text-align:end">
         <a href="/Activity/Edit/@Model.Id" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-success btn-active-light-success">
             تعديل
