@@ -23,7 +23,7 @@
                         <span class="menu-title">الرئيسيه</span>
                     </a>
                     <!--end:Menu link-->
-                    @if (User.IsInRole(AppRoles.SuperAdmin))
+                    @if (User.IsInRole(AppRoles.SuperAdmin) || User.IsInRole(AppRoles.Admin))
                     {
                         <!--begin:Menu link-->
                         <a class="menu-link" asp-controller="Entity" asp-action="Index" active-when="Entity">
