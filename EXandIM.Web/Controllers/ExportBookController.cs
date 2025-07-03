@@ -107,15 +107,15 @@ namespace EXandIM.Web.Controllers
                     teams.Add(team);
                 }
             }
-            if (user.Team is not null)
-            {
-                var userTeamId = user.TeamId;
-                if (!book.Teams.Any(team => team.Id == userTeamId))
-                {
-                    var team = await _context.Teams.FindAsync(userTeamId);
-                    teams.Add(team);
-                }
-            }
+            //if (user.Team is not null)
+            //{
+            //    var userTeamId = user.TeamId;
+            //    if (!book.Teams.Any(team => team.Id == userTeamId))
+            //    {
+            //        var team = await _context.Teams.FindAsync(userTeamId);
+            //        teams.Add(team);
+            //    }
+            //}
             book.Teams = teams;
             book.Entities = entities;
             book.SubEntities = subEntities;
@@ -318,14 +318,14 @@ namespace EXandIM.Web.Controllers
                         book.Teams.Add(team);
                     }
                 }
-                if (userTeam > 0)
-                {
-                    if (!model.SelectedTeams.Contains(userTeam))
-                    {
-                        var UserTeam = await _context.Teams.FindAsync(userTeam);
-                        book.Teams.Add(UserTeam!);
-                    }
-                }
+                //if (userTeam > 0)
+                //{
+                //    if (!model.SelectedTeams.Contains(userTeam))
+                //    {
+                //        var UserTeam = await _context.Teams.FindAsync(userTeam);
+                //        book.Teams.Add(UserTeam!);
+                //    }
+                //}
 
             }
             else
@@ -457,8 +457,8 @@ namespace EXandIM.Web.Controllers
                 return Unauthorized();
 
             IQueryable<Book> booksQuery;
-            if (User.IsInRole(AppRoles.SuperAdmin))
-            {
+            //if (User.IsInRole(AppRoles.SuperAdmin))
+            //{
                 booksQuery = _context.Books
                     .Include(b => b.Entities)
                     .Include(b => b.SubEntities)
@@ -466,27 +466,27 @@ namespace EXandIM.Web.Controllers
                     .Include(b => b.SideEntity)
                     .Include(b => b.User)
                     .Where(b => b.IsExport && b.IsAccepted);
-            }
-            else if (User.IsInRole(AppRoles.CanViewMyTeamOnly))
-            {
-                booksQuery = _context.Books
-                    .Include(b => b.Entities)
-                    .Include(b => b.SubEntities)
-                    .Include(b => b.SecondSubEntities)
-                    .Include(b => b.SideEntity)
-                    .Include(b => b.User)
-                    .Where(b => b.IsExport && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted && !b.IsHidden);
-            }
-            else
-            {
-                booksQuery = _context.Books
-                    .Include(b => b.Entities)
-                    .Include(b => b.SubEntities)
-                    .Include(b => b.SecondSubEntities)
-                    .Include(b => b.SideEntity)
-                    .Include(b => b.User)
-                    .Where(b => b.IsExport && b.User!.Id == userId && b.IsAccepted && !b.IsHidden);
-            }
+            //}
+            //else if (User.IsInRole(AppRoles.CanViewMyTeamOnly))
+            //{
+            //    booksQuery = _context.Books
+            //        .Include(b => b.Entities)
+            //        .Include(b => b.SubEntities)
+            //        .Include(b => b.SecondSubEntities)
+            //        .Include(b => b.SideEntity)
+            //        .Include(b => b.User)
+            //        .Where(b => b.IsExport && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted && !b.IsHidden);
+            //}
+            //else
+            //{
+            //    booksQuery = _context.Books
+            //        .Include(b => b.Entities)
+            //        .Include(b => b.SubEntities)
+            //        .Include(b => b.SecondSubEntities)
+            //        .Include(b => b.SideEntity)
+            //        .Include(b => b.User)
+            //        .Where(b => b.IsExport && b.User!.Id == userId && b.IsAccepted && !b.IsHidden);
+            //}
 
             if (!string.IsNullOrEmpty(searchValue))
             {
@@ -622,8 +622,8 @@ namespace EXandIM.Web.Controllers
                 return Unauthorized();
 
             IQueryable<Book> booksQuery;
-            if (User.IsInRole(AppRoles.SuperAdmin))
-            {
+            //if (User.IsInRole(AppRoles.SuperAdmin))
+            //{
                 booksQuery = _context.Books
                     .Include(b => b.Entities)
                     .Include(b => b.SubEntities)
@@ -631,27 +631,27 @@ namespace EXandIM.Web.Controllers
                     .Include(b => b.SideEntity)
                     .Include(b => b.User)
                     .Where(b => b.IsExport && b.IsAccepted);
-            }
-            else if (User.IsInRole(AppRoles.CanViewMyTeamOnly))
-            {
-                booksQuery = _context.Books
-                    .Include(b => b.Entities)
-                    .Include(b => b.SubEntities)
-                    .Include(b => b.SecondSubEntities)
-                    .Include(b => b.SideEntity)
-                    .Include(b => b.User)
-                    .Where(b => b.IsExport && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted && !b.IsHidden);
-            }
-            else
-            {
-                booksQuery = _context.Books
-                    .Include(b => b.Entities)
-                    .Include(b => b.SubEntities)
-                    .Include(b => b.SecondSubEntities)
-                    .Include(b => b.SideEntity)
-                    .Include(b => b.User)
-                    .Where(b => b.IsExport && b.User!.Id == userId && b.IsAccepted && !b.IsHidden);
-            }
+            //}
+            //else if (User.IsInRole(AppRoles.CanViewMyTeamOnly))
+            //{
+            //    booksQuery = _context.Books
+            //        .Include(b => b.Entities)
+            //        .Include(b => b.SubEntities)
+            //        .Include(b => b.SecondSubEntities)
+            //        .Include(b => b.SideEntity)
+            //        .Include(b => b.User)
+            //        .Where(b => b.IsExport && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted && !b.IsHidden);
+            //}
+            //else
+            //{
+            //    booksQuery = _context.Books
+            //        .Include(b => b.Entities)
+            //        .Include(b => b.SubEntities)
+            //        .Include(b => b.SecondSubEntities)
+            //        .Include(b => b.SideEntity)
+            //        .Include(b => b.User)
+            //        .Where(b => b.IsExport && b.User!.Id == userId && b.IsAccepted && !b.IsHidden);
+            //}
 
             if (!string.IsNullOrEmpty(searchValue))
             {
