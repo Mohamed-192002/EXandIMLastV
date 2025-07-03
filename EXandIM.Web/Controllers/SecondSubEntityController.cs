@@ -137,7 +137,7 @@ namespace EXandIM.Web.Controllers
                 if (team != null)
                 {
 
-                    team.SideEntityId = side.Id;
+                    //team.SideEntityId = side.Id;
                     team.CircleId = circle.Id;
                     team.Name = viewModel.Name;
                     team.AcceptArchive = viewModel.AcceptArchive;

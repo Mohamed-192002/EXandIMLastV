@@ -150,7 +150,8 @@ namespace EXandIM.Web.Controllers
                 return NotFound();
             var model = _mapper.Map<ReadingFormViewModel>(readings);
             model.ExistingFiles = _mapper.Map<List<BookFileDisplay>>(readings.ReadingImages);
-
+            var entities = _context.Entities.OrderBy(a => a.Name).ToList();
+            model.Entities = _mapper.Map<IEnumerable<SelectListItem>>(entities);
 
             model.SelectedEntities = readings.Entities.Select(t => t.Id).ToList();
             model.SelectedSubEntity = readings.SubEntities.Select(t => t.Id).ToList();
