@@ -13,6 +13,6 @@
         public ActivityBook? ActivityBook { get; set; }
 
         // New SortOrder field to define order within the ActivityBook
-        public int SortOrder { get; set; }
+        public double SortOrder { get; set; }
     }
 }

@@ -25,6 +25,9 @@ namespace EXandIM.Web.Core.Mapping
             CreateMap<Circle, SelectListItem>()
                .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Id))
                .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Name));
+            CreateMap<ActivityBook, SelectListItem>()
+               .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Id))
+               .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Title));
 
             // Team
             CreateMap<Team, TeamViewModel>()

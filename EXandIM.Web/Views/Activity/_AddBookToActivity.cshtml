@@ -1,0 +1,40 @@
+﻿@model AddToActivityViewModel
+
+
+<form asp-action="AddBookToActivity"
+      data-ajax-method="post"
+      data-ajax="true"
+      data-ajax-begin="onModalBegin"
+      data-ajax-success="onModalSuccess"
+      data-ajax-failure="showCustomErrorMessage"
+      data-ajax-complete="onModalComplete">
+    @if (Model?.Id > 0)
+    {
+        <input type="hidden" asp-for="Id" />
+    }
+
+    <div class="d-flex flex-column mb-8 fv-row fv-plugins-icon-container">
+        <!--begin::Label-->
+        <label class="d-flex align-items-center fs-6 fw-semibold mb-2">
+            <span class="required">السلسله</span>
+        </label>
+        <!--end::Label-->
+        <!--begin::Row-->
+        <div class="row">
+            <!--begin::Col-->
+            <div class="fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                <select style="height: 60px;" class="form-select form-select-solid js-select2" data-placeholder="اختار السلسله" asp-for="ActivityId" asp-items="@Model.Activities">
+                    <option value="">اختار السلسله</option>
+                </select>
+                <span asp-validation-for="ActivityId" class="text-danger d-block"></span>
+            </div>
+            <!--end::Col-->
+        </div>
+        <!--end::Row-->
+    </div>
+    <partial name="_ModalFooter" />
+</form>
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -25,7 +25,26 @@ function showErrorMessage(message = 'حدث خطأ') {
         }
     });
 }
+function showCustomErrorMessage(xhr) {
+    // Try to get error message from response
+    let errorMessage = xhr.responseText;
+    try {
+        const response = JSON.parse(xhr.responseText);
+        if (response.errorMessage) {
+            errorMessage = response.errorMessage;
+        }
+    } catch (e) {
+        // If not JSON, use the response text as is
+    }
 
+    Swal.fire({
+        icon: 'error',
+        title: errorMessage,
+        customClass: {
+            confirmButton: "btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary"
+        }
+    });
+}
 function onModalBegin() {
     $('body :submit').attr('disabled', 'disabled').attr('data-kt-indicator', 'on');
 }
@@ -40,7 +59,7 @@ function onModalSuccess(item) {
         $(updatedRow).replaceWith(item);
         updatedRow = undefined;
     }
-
+    location.reload();
     KTMenu.init();
     KTMenu.initHandlers();
 }

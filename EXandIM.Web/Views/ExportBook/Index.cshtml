@@ -118,6 +118,7 @@
                         {
                             <th class="js-no-export" style="text-align:center">اخفاء / اظهار</th>
                         }
+                        <th class="js-no-export" style="text-align:center">اضافه الى سلسله</th>
                         <th class="text-start">فعل</th>
                     </tr>
                 </thead>
@@ -136,9 +137,9 @@
 {
     <script src="~/assets/plugins/datatables/datatables.bundle.js"></script>
 }
-
 @section Scripts
 {
+    <partial name="_ValidationScriptsPartial" />
     <script src="~/js/books.js" asp-append-version="true"></script>
     <script src="~/js/selected-search.js"></script>
     <script>

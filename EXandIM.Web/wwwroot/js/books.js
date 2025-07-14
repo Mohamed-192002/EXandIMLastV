@@ -127,7 +127,33 @@
             }
         });
     }
-
+    if (tbody.data('controller') === "ExportBook" || tbody.data('controller') === "ImportBook") {
+        columns.push({
+            data: null,
+            className: "js-no-export text-center",
+            orderable: false,
+            render: function (data, type, row, meta) {
+                return `<a href="javascript:;" type="button" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary js-render-modal"
+                        data-title="اضافه" data-url="/Activity/AddBookToActivity?bookId=${row.id}" data-update="true">
+                    إضافة
+                </a>`;
+            }
+        });
+    }
+    else {
+        columns.push({
+            data: null,
+            className: "js-no-export text-center",
+            orderable: false,
+            render: function (data, type, row, meta) {
+                return `<a href="javascript:;" type="button" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary js-render-modal"
+                        data-title="اضافه" data-url="/Activity/AddReadingToActivity?readingId=${row.id}" data-update="true">
+                    إضافة
+                </a>`;
+            }
+        });
+    }
+   
     columns.push(
         {
             "className": 'text-start',
