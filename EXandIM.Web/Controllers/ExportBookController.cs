@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Dapper;
 using EXandIM.Web.Core;
 using EXandIM.Web.Core.Models;
 using EXandIM.Web.Core.ViewModels;
@@ -8,20 +9,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using static EXandIM.Web.Controllers.ReadingsController;
 using static System.Reflection.Metadata.BlobBuilder;
 
 namespace EXandIM.Web.Controllers
 {
     [Authorize]
-    public class ExportBookController(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager) : Controller
+    public class ExportBookController(IConfiguration configuration, ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager) : Controller
     {
         private readonly ApplicationDbContext _context = context;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection");
 
         private readonly IMapper _mapper = mapper;
         private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
@@ -439,78 +446,92 @@ namespace EXandIM.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetBooks()
+        [HttpPost]
+        public async Task<IActionResult> GetBooks()
         {
-            var skip = int.Parse(Request.Form["start"]!);
-            var pageSize = int.Parse(Request.Form["length"]!);
-            var searchValue = Request.Form["search[value]"];
-            var sortColumnIndex = Request.Form["order[0][column]"];
-            var sortColumn = Request.Form[$"columns[{sortColumnIndex}][name]"];
-            var sortColumnDirection = Request.Form["order[0][dir]"];
+            int skip = int.Parse(Request.Form["start"]);
+            int pageSize = int.Parse(Request.Form["length"]);
+            string searchValue = Request.Form["search[value]"];
+            string sortColumnIndex = Request.Form["order[0][column]"];
+            string sortColumn = Request.Form[$"columns[{sortColumnIndex}][name]"];
+            string sortDirection = Request.Form["order[0][dir]"];
 
-            var userId = GetAuthenticatedUser();
-            if (userId == null)
-                return BadRequest("يجب تسجيل الدخول اولا");
-
-            var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
-            if (user == null)
-                return Unauthorized();
-
-            IQueryable<Book> booksQuery;
-            //if (User.IsInRole(AppRoles.SuperAdmin))
-            //{
-                booksQuery = _context.Books
-                    .Include(b => b.Entities)
-                    .Include(b => b.SubEntities)
-                    .Include(b => b.SecondSubEntities)
-                    .Include(b => b.SideEntity)
-                    .Include(b => b.User)
-                    .Where(b => b.IsExport && b.IsAccepted);
-            //}
-            //else if (User.IsInRole(AppRoles.CanViewMyTeamOnly))
-            //{
-            //    booksQuery = _context.Books
-            //        .Include(b => b.Entities)
-            //        .Include(b => b.SubEntities)
-            //        .Include(b => b.SecondSubEntities)
-            //        .Include(b => b.SideEntity)
-            //        .Include(b => b.User)
-            //        .Where(b => b.IsExport && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted && !b.IsHidden);
-            //}
-            //else
-            //{
-            //    booksQuery = _context.Books
-            //        .Include(b => b.Entities)
-            //        .Include(b => b.SubEntities)
-            //        .Include(b => b.SecondSubEntities)
-            //        .Include(b => b.SideEntity)
-            //        .Include(b => b.User)
-            //        .Where(b => b.IsExport && b.User!.Id == userId && b.IsAccepted && !b.IsHidden);
-            //}
-
-            if (!string.IsNullOrEmpty(searchValue))
+            var books = new ExportBookResult();
+            if (User.IsInRole(AppRoles.SuperAdmin))
             {
-                booksQuery = booksQuery.Where(b => b.Title.Contains(searchValue) || b.Notes.Contains(searchValue)
-                    || b.Entities.Any(e => e.Name.Contains(searchValue))
-                    || b.SubEntities.Any(se => se.Name.Contains(searchValue))
-                    //  || b.SideEntity.Name.Contains(searchValue)
-                    || b.BookNumber.Contains(searchValue));
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortDirection, null, null, true);
             }
-
-
-            booksQuery = booksQuery.OrderBy($"{sortColumn} {sortColumnDirection}");
-
-            var data = booksQuery.Skip(skip).Take(pageSize).ToList();
-
-            var mappedData = _mapper.Map<IEnumerable<ExportBookViewModel>>(data);
-
-            var recordsTotal = booksQuery.Count();
-
-            var jsonData = new { recordsFiltered = recordsTotal, recordsTotal, data = mappedData };
+            else
+            {
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortDirection, null, null, false);
+            }
+            var jsonData = new { recordsFiltered = books.RecordsTotal, books.RecordsTotal, data = books.Books };
 
             return Ok(jsonData);
         }
 
+        private async Task<ExportBookResult> LoadBooks(int skip, int pageSize, string search, string sortColumn, string sortDirection, DateTime? fromDate = null, DateTime? toDate = null, bool isSuperAdmin = false)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                var parameters = new
+                {
+                    Skip = skip,
+                    PageSize = pageSize,
+                    Search = search ?? "",
+                    SortColumn = sortColumn ?? "BookDate",
+                    SortDirection = sortDirection ?? "DESC",
+                    FromDate = fromDate, // يمكن أن تكون null
+                    ToDate = toDate,    // يمكن أن تكون null
+                    IsSuperAdmin = isSuperAdmin
+                };
+
+                using var multi = await connection.QueryMultipleAsync(
+                    "GetFullAcceptedExportBooks",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+
+                // 1. الكتب
+                var books = (await multi.ReadAsync<ExportBookViewModel>()).ToList();
+
+                // 2. Entities
+                var entities = (await multi.ReadAsync<(int BookId, string EntityName)>()).ToList();
+
+                // 3. SubEntities
+                var subEntities = (await multi.ReadAsync<(int BookId, string SubEntityName)>()).ToList();
+
+                // 4. SecondSubEntities
+                var secondSubEntities = (await multi.ReadAsync<(int BookId, string SecondSubEntityName)>()).ToList();
+                var teams = (await multi.ReadAsync<(int BookId, string TeamName)>()).ToList();
+
+                // 5. Total Count
+                var recordsTotal = (await multi.ReadAsync<int>()).FirstOrDefault();
+
+                // ربط الكيانات الفرعية بالكتب
+                foreach (var book in books)
+                {
+                    book.Entities = entities.Where(e => e.BookId == book.Id).Select(e => e.EntityName).ToList();
+                    book.SubEntities = subEntities.Where(e => e.BookId == book.Id).Select(e => e.SubEntityName).ToList();
+                    book.SecondSubEntities = secondSubEntities.Where(e => e.BookId == book.Id).Select(e => e.SecondSubEntityName).ToList();
+                    book.Circle = books.FirstOrDefault(b => b.Id == book.Id)?.Circle;
+                    book.Teams = teams.Where(t => t.BookId == book.Id).Select(t => t.TeamName).ToList();
+
+                }
+
+                return new ExportBookResult
+                {
+                    Books = books,
+                    RecordsTotal = recordsTotal
+                };
+            }
+        }
+        public class ExportBookResult
+        {
+            public List<ExportBookViewModel> Books { get; set; } = new();
+            public int RecordsTotal { get; set; }
+        }
 
         private string GetAuthenticatedUser()
         {
@@ -604,7 +625,7 @@ namespace EXandIM.Web.Controllers
 
 
         [HttpPost]
-        public IActionResult GetBooksAfterFilterDate(DateTime? fromDate, DateTime? toDate)
+        public async Task<IActionResult> GetBooksAfterFilterDateAsync(DateTime? fromDate, DateTime? toDate)
         {
             var skip = int.Parse(Request.Form["start"]!);
             var pageSize = int.Parse(Request.Form["length"]!);
@@ -617,89 +638,16 @@ namespace EXandIM.Web.Controllers
             if (userId == null)
                 return BadRequest("يجب تسجيل الدخول اولا");
 
-            var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
-            if (user == null)
-                return Unauthorized();
-
-            IQueryable<Book> booksQuery;
-            //if (User.IsInRole(AppRoles.SuperAdmin))
-            //{
-                booksQuery = _context.Books
-                    .Include(b => b.Entities)
-                    .Include(b => b.SubEntities)
-                    .Include(b => b.SecondSubEntities)
-                    .Include(b => b.SideEntity)
-                    .Include(b => b.User)
-                    .Where(b => b.IsExport && b.IsAccepted);
-            //}
-            //else if (User.IsInRole(AppRoles.CanViewMyTeamOnly))
-            //{
-            //    booksQuery = _context.Books
-            //        .Include(b => b.Entities)
-            //        .Include(b => b.SubEntities)
-            //        .Include(b => b.SecondSubEntities)
-            //        .Include(b => b.SideEntity)
-            //        .Include(b => b.User)
-            //        .Where(b => b.IsExport && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted && !b.IsHidden);
-            //}
-            //else
-            //{
-            //    booksQuery = _context.Books
-            //        .Include(b => b.Entities)
-            //        .Include(b => b.SubEntities)
-            //        .Include(b => b.SecondSubEntities)
-            //        .Include(b => b.SideEntity)
-            //        .Include(b => b.User)
-            //        .Where(b => b.IsExport && b.User!.Id == userId && b.IsAccepted && !b.IsHidden);
-            //}
-
-            if (!string.IsNullOrEmpty(searchValue))
+            var books = new ExportBookResult();
+            if (User.IsInRole(AppRoles.SuperAdmin))
             {
-                booksQuery = booksQuery.Where(b => b.Title.Contains(searchValue) || b.Notes.Contains(searchValue)
-                    || b.Entities.Any(e => e.Name.Contains(searchValue))
-                    || b.SubEntities.Any(se => se.Name.Contains(searchValue))
-                    //  || b.SideEntity.Name.Contains(searchValue)
-                    || b.BookNumber.Contains(searchValue));
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, fromDate, toDate, true);
             }
-
-
-
-            var books = booksQuery.ToList();
-
-            if (fromDate.HasValue)
-                books = books.Where(x => x.BookDate >= fromDate.Value).ToList();
-            if (toDate.HasValue)
-                books = books.Where(x => x.BookDate <= toDate.Value).ToList();
-
-            // Apply sorting in-memory based on known property names
-            if (!string.IsNullOrEmpty(sortColumn) && !string.IsNullOrEmpty(sortColumnDirection))
+            else
             {
-                switch (sortColumn)
-                {
-                    case "Title":
-                        books = sortColumnDirection == "asc" ? books.OrderBy(b => b.Title).ToList() : books.OrderByDescending(b => b.Title).ToList();
-                        break;
-                    case "BookNumber":
-                        books = sortColumnDirection == "asc" ? books.OrderBy(b => b.BookNumber).ToList() : books.OrderByDescending(b => b.BookNumber).ToList();
-                        break;
-                    case "BookDate":
-                        books = sortColumnDirection == "asc" ? books.OrderBy(b => b.BookDate).ToList() : books.OrderByDescending(b => b.BookDate).ToList();
-                        break;
-                    //case "Entities.Name":
-                    //    books = sortColumnDirection == "asc" ? books.OrderBy(b => b.Entities.FirstOrDefault().Name).ToList() : books.OrderByDescending(b => b.Entities.FirstOrDefault().Name).ToList();
-                    //    break;
-                    default:
-                        books = books.OrderBy(b => b.Id).ToList(); // Default sorting
-                        break;
-                }
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, fromDate, toDate, false);
             }
-            var recordsTotal = books.Count;
-
-            var data = books.Skip(skip).Take(pageSize).ToList();
-
-            var mappedData = _mapper.Map<IEnumerable<ExportBookViewModel>>(data);
-
-            var jsonData = new { recordsFiltered = recordsTotal, recordsTotal, data = mappedData };
+            var jsonData = new { recordsFiltered = books.RecordsTotal, books.RecordsTotal, data = books.Books };
 
             return Ok(jsonData);
         }

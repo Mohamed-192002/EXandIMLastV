@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Dapper;
 using EXandIM.Web.Core;
 using EXandIM.Web.Core.Models;
 using EXandIM.Web.Core.ViewModels;
@@ -7,7 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Security.Claims;
@@ -15,12 +18,14 @@ using System.Security.Claims;
 namespace EXandIM.Web.Controllers
 {
     [Authorize]
-    public class ReadingsController(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager) : Controller
+    public class ReadingsController(IConfiguration configuration, ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager) : Controller
     {
         private readonly ApplicationDbContext _context = context;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly IMapper _mapper = mapper;
         private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
+        private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection");
+
         private string GetAuthenticatedUser()
         {
             var userUidClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -361,7 +366,7 @@ namespace EXandIM.Web.Controllers
             return View(viewModel);
         }
         [HttpPost]
-        public IActionResult GetBooks()
+        public async Task<IActionResult> GetBooksAsync()
         {
             var skip = int.Parse(Request.Form["start"]!);
             var pageSize = int.Parse(Request.Form["length"]!);
@@ -375,48 +380,21 @@ namespace EXandIM.Web.Controllers
             var userId = GetAuthenticatedUser();
             if (userId == null)
                 return BadRequest("يجب تسجيل الدخول اولا");
-            var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
-            IQueryable<Reading> readings;
+
+            var books = new ReadingResult();
             if (User.IsInRole(AppRoles.SuperAdmin))
             {
-                readings = _context.Readings
-                .Include(b => b.Entities)
-                .Include(b => b.SubEntities)
-                .Include(b => b.SecondSubEntities)
-                .Include(b => b.User);
+                books = await LoadReadings(skip, pageSize, searchValue, sortColumn, sortColumnDirection,null,null,true);
             }
             else
             {
-                readings = _context.Readings
-                    .Where(r => !r.IsHidden)
-                    .Include(b => b.Entities)
-                    .Include(b => b.SubEntities)
-                    .Include(b => b.SecondSubEntities)
-                    .Include(b => b.User);
+                books = await LoadReadings(skip, pageSize, searchValue, sortColumn, sortColumnDirection, null, null, false);
             }
-           
-
-            if (!string.IsNullOrEmpty(searchValue))
-                readings = readings.Where(b =>
-                        b.Title.Contains(searchValue!)
-                     || b.Notes.Contains(searchValue)
-                     || b.Entities.Any(e => e.Name.Contains(searchValue))
-                     || b.SubEntities.Any(se => se.Name.Contains(searchValue)));
-
-            readings = readings.OrderBy($"{sortColumn} {sortColumnDirection}");
-
-            var data = readings.Skip(skip).Take(pageSize).ToList();
-
-            var mappedData = _mapper.Map<IEnumerable<ReadingViewModel>>(data);
-
-            var recordsTotal = readings.Count();
-
-            var jsonData = new { recordsFiltered = recordsTotal, recordsTotal, data = mappedData };
-
+            var jsonData = new { recordsFiltered = books.RecordsTotal, books.RecordsTotal, data = books.Books };
             return Ok(jsonData);
         }
 
-        public IActionResult GetBooksAfterFilterDate(DateTime? fromDate, DateTime? toDate)
+        public async Task<IActionResult> GetBooksAfterFilterDateAsync(DateTime? fromDate, DateTime? toDate)
         {
             var skip = int.Parse(Request.Form["start"]!);
             var pageSize = int.Parse(Request.Form["length"]!);
@@ -430,48 +408,89 @@ namespace EXandIM.Web.Controllers
             if (userId == null)
                 return BadRequest("يجب تسجيل الدخول اولا");
 
-            var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
-            IQueryable<Reading> readings;
+            var books = new ReadingResult();
             if (User.IsInRole(AppRoles.SuperAdmin))
             {
-                readings = _context.Readings
-                .Include(b => b.Entities)
-                .Include(b => b.SubEntities)
-                .Include(b => b.SecondSubEntities)
-                .Include(b => b.User);
+                books = await LoadReadings(skip, pageSize, searchValue, sortColumn, sortColumnDirection, fromDate, toDate, true);
             }
             else
             {
-                readings = _context.Readings
-                    .Where(r => !r.IsHidden)
-                    .Include(b => b.Entities)
-                    .Include(b => b.SubEntities)
-                    .Include(b => b.SecondSubEntities)
-                    .Include(b => b.User);
+                books = await LoadReadings(skip, pageSize, searchValue, sortColumn, sortColumnDirection, fromDate, toDate, false);
             }
-
-            if (fromDate.HasValue)
-                readings = readings.Where(x => x.BookDate >= fromDate.Value);
-            if (toDate.HasValue)
-                readings = readings.Where(x => x.BookDate <= toDate.Value);
-
-            if (!string.IsNullOrEmpty(searchValue))
-                readings = readings.Where(b =>
-                                          b.Title.Contains(searchValue!)
-                                       || b.Notes.Contains(searchValue)
-                                       || b.Entities.Any(e => e.Name.Contains(searchValue))
-                                       || b.SubEntities.Any(se => se.Name.Contains(searchValue)));
-            readings = readings.OrderBy($"{sortColumn} {sortColumnDirection}");
-
-            var data = readings.Skip(skip).Take(pageSize).ToList();
-            var mappedData = _mapper.Map<IEnumerable<ReadingViewModel>>(data);
-            var recordsTotal = readings.Count();
-
-            var jsonData = new { recordsFiltered = recordsTotal, recordsTotal, data = mappedData };
-
+            var jsonData = new { recordsFiltered = books.RecordsTotal, books.RecordsTotal, data = books.Books };
             return Ok(jsonData);
         }
+        private async Task<ReadingResult> LoadReadings(int skip, int pageSize, string search,
+            string sortColumn, string sortDirection, DateTime? fromDate = null,
+            DateTime? toDate = null, bool isSuperAdmin = false)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
 
+                var parameters = new
+                {
+                    Skip = skip,
+                    PageSize = pageSize,
+                    Search = search ?? "",
+                    SortColumn = sortColumn ?? "BookDate",
+                    SortDirection = sortDirection ?? "DESC",
+                    FromDate = fromDate,
+                    ToDate = toDate,
+                    IsSuperAdmin = isSuperAdmin
+                };
+
+                using var multi = await connection.QueryMultipleAsync(
+                    "GetReadings",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+
+                // 1. Readings data
+                var readings = (await multi.ReadAsync<ReadingViewModel>()).ToList();
+
+                // 2. Entities
+                var entities = (await multi.ReadAsync<(int ReadingId, string EntityName)>()).ToList();
+
+                // 3. SubEntities
+                var subEntities = (await multi.ReadAsync<(int ReadingId, string SubEntityName)>()).ToList();
+
+                // 4. SecondSubEntities
+                var secondSubEntities = (await multi.ReadAsync<(int ReadingId, string SecondSubEntityName)>()).ToList();
+
+                // 6. Total Count
+                var recordsTotal = (await multi.ReadAsync<int>()).FirstOrDefault();
+
+                // Map related data to readings
+                foreach (var reading in readings)
+                {
+                    reading.Entities = entities
+                        .Where(e => e.ReadingId == reading.Id)
+                        .Select(e => e.EntityName)
+                        .ToList();
+
+                    reading.SubEntities = subEntities
+                        .Where(e => e.ReadingId == reading.Id)
+                        .Select(e => e.SubEntityName)
+                        .ToList();
+
+                    reading.SecondSubEntities = secondSubEntities
+                        .Where(e => e.ReadingId == reading.Id)
+                        .Select(e => e.SecondSubEntityName)
+                        .ToList();
+                }
+
+                return new ReadingResult
+                {
+                    Books = readings,
+                    RecordsTotal = recordsTotal
+                };
+            }
+        }
+        public class ReadingResult
+        {
+            public List<ReadingViewModel> Books { get; set; } = new();
+            public int RecordsTotal { get; set; }
+        }
         public IActionResult AllowItem(ReadingFormViewModel model)
         {
             var reading = _context.Readings.SingleOrDefault(b => b.Title == model.Title && b.BookDate == model.BookDate);

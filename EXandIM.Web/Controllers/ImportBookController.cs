@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Dapper;
 using EXandIM.Web.Core;
 using EXandIM.Web.Core.Models;
 using EXandIM.Web.Core.ViewModels;
@@ -8,18 +9,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Linq.Dynamic.Core;
 using System.Security.Claims;
+using static EXandIM.Web.Controllers.ExportBookController;
 
 namespace EXandIM.Web.Controllers
 {
     [Authorize]
-    public class ImportBookController(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager) : Controller
+    public class ImportBookController(IConfiguration configuration, ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, UserManager<ApplicationUser> userManager) : Controller
     {
         private readonly ApplicationDbContext _context = context;
         private readonly IMapper _mapper = mapper;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly string _connectionString = configuration.GetConnectionString("DefaultConnection");
 
         private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
         private string GetAuthenticatedUser()
@@ -509,7 +514,7 @@ namespace EXandIM.Web.Controllers
             return View(viewModel);
         }
         [HttpPost]
-        public IActionResult GetBooks()
+        public async Task<IActionResult> GetBooksAsync()
         {
             var skip = int.Parse(Request.Form["start"]!);
             var pageSize = int.Parse(Request.Form["length"]!);
@@ -521,62 +526,24 @@ namespace EXandIM.Web.Controllers
             var userId = GetAuthenticatedUser();
             if (userId == null)
                 return BadRequest("يجب تسجيل الدخول اولا");
-            var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
-            IQueryable<Book> books;
-            //if (User.IsInRole(AppRoles.SuperAdmin))
-            //{
-                books = _context.Books
-            .Include(b => b.Entities)
-               .Include(b => b.SubEntities)
-               .Include(b => b.SecondSubEntities)
-              .Include(b => b.SideEntity)
-              .Include(b => b.User)
-             .Where(b => b.IsExport == false && b.IsAccepted);
-            //}
-            //else if (User.IsInRole(AppRoles.CanViewMyTeamOnly))
-            //{
-            //    books = _context.Books
-            //   .Include(b => b.Entities)
-            //   .Include(b => b.SubEntities)
-            //   .Include(b => b.SecondSubEntities)
-            //   .Include(b => b.SideEntity)
-            //  .Include(b => b.User)
-            //  .Where(b => b.IsExport == false && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted && !b.IsHidden);
-            //}
-            //else
-            //{
-            //    books = _context.Books
-            //   .Include(b => b.Entities)
-            //   .Include(b => b.SubEntities)
-            //   .Include(b => b.SecondSubEntities)
-            //   .Include(b => b.SideEntity)
-            //  .Include(b => b.User)
-            //   .Where(b => b.IsExport == false && b.User!.Id == userId && b.IsAccepted && !b.IsHidden);
-            //}
 
-            if (!string.IsNullOrEmpty(searchValue))
-                books = books.Where(b => b.Title.Contains(searchValue) || b.Notes.Contains(searchValue)
-                   || b.Entities.Any(e => e.Name.Contains(searchValue))
-                   || b.SubEntities.Any(se => se.Name.Contains(searchValue))
-                   //  || b.SideEntity.Name.Contains(searchValue)
-                   || b.BookNumber.Contains(searchValue));
+            var books = new ImportBookResult();
+            if (User.IsInRole(AppRoles.SuperAdmin))
+            {
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, null, null, true);
+            }
+            else
+            {
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, null, null, false);
+            }
 
-
-            books = books.OrderBy($"{sortColumn} {sortColumnDirection}");
-
-            var data = books.Skip(skip).Take(pageSize).ToList();
-
-            var mappedData = _mapper.Map<IEnumerable<ImportBookViewModel>>(data);
-
-            var recordsTotal = books.Count();
-
-            var jsonData = new { recordsFiltered = recordsTotal, recordsTotal, data = mappedData };
+            var jsonData = new { recordsFiltered = books.RecordsTotal, books.RecordsTotal, data = books.Books };
 
             return Ok(jsonData);
         }
 
         [HttpPost]
-        public IActionResult GetBooksAfterFilterDate(DateTime? fromDate, DateTime? toDate)
+        public async Task<IActionResult> GetBooksAfterFilterDateAsync(DateTime? fromDate, DateTime? toDate)
         {
             var skip = int.Parse(Request.Form["start"]!);
             var pageSize = int.Parse(Request.Form["length"]!);
@@ -590,66 +557,82 @@ namespace EXandIM.Web.Controllers
             var userId = GetAuthenticatedUser();
             if (userId == null)
                 return BadRequest("يجب تسجيل الدخول اولا");
-            var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
-            IQueryable<Book> books;
-            //if (User.IsInRole(AppRoles.SuperAdmin))
-            //{
-                books = _context.Books
-            .Include(b => b.Entities)
-               .Include(b => b.SubEntities)
-               .Include(b => b.SecondSubEntities)
-              .Include(b => b.SideEntity)
-              .Include(b => b.User)
-             .Where(b => b.IsExport == false && b.IsAccepted);
-            //}
-            //else if (User.IsInRole(AppRoles.CanViewMyTeamOnly))
-            //{
-            //    books = _context.Books
-            //   .Include(b => b.Entities)
-            //   .Include(b => b.SubEntities)
-            //   .Include(b => b.SecondSubEntities)
-            //   .Include(b => b.SideEntity)
-            //  .Include(b => b.User)
-            //  .Where(b => b.IsExport == false && b.Teams.Any(team => team.Id == user.TeamId) && b.IsAccepted && !b.IsHidden);
-            //}
-            //else
-            //{
-            //    books = _context.Books
-            //   .Include(b => b.Entities)
-            //   .Include(b => b.SubEntities)
-            //   .Include(b => b.SecondSubEntities)
-            //   .Include(b => b.SideEntity)
-            //  .Include(b => b.User)
-            //   .Where(b => b.IsExport == false && b.User!.Id == userId && b.IsAccepted && !b.IsHidden);
-            //}
-
-            if (fromDate.HasValue)
-                books = books.Where(x => x.BookDate >= fromDate.Value);
-            if (toDate.HasValue)
-                books = books.Where(x => x.BookDate <= toDate.Value);
-
-
-            if (!string.IsNullOrEmpty(searchValue))
-                books = books.Where(b => b.Title.Contains(searchValue)
-                   || b.Entities.Any(e => e.Name.Contains(searchValue))
-                   || b.SubEntities.Any(se => se.Name.Contains(searchValue))
-                   //  || b.SideEntity.Name.Contains(searchValue)
-                   || b.BookNumber.Contains(searchValue));
-
-            books = books.OrderBy($"{sortColumn} {sortColumnDirection}");
-
-
-            var data = books.Skip(skip).Take(pageSize).ToList();
-
-            var mappedData = _mapper.Map<IEnumerable<ImportBookViewModel>>(data);
-
-            var recordsTotal = books.Count();
-
-            var jsonData = new { recordsFiltered = recordsTotal, recordsTotal, data = mappedData };
+            var books = new ImportBookResult();
+            if (User.IsInRole(AppRoles.SuperAdmin))
+            {
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, fromDate, toDate, true);
+            }
+            else
+            {
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, fromDate, toDate, false);
+            }
+            var jsonData = new { recordsFiltered = books.RecordsTotal, books.RecordsTotal, data = books.Books };
 
             return Ok(jsonData);
         }
+        private async Task<ImportBookResult> LoadBooks(int skip, int pageSize, string search, string sortColumn, string sortDirection,
+            DateTime? fromDate = null, DateTime? toDate = null, bool isSuperAdmin = false)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
 
+                var parameters = new
+                {
+                    Skip = skip,
+                    PageSize = pageSize,
+                    Search = search ?? "",
+                    SortColumn = sortColumn ?? "BookDate",
+                    SortDirection = sortDirection ?? "DESC",
+                    FromDate = fromDate, // يمكن أن تكون null
+                    ToDate = toDate,     // يمكن أن تكون null
+                    IsSuperAdmin = isSuperAdmin
+                };
+
+                using var multi = await connection.QueryMultipleAsync(
+                    "GetFullAcceptedImportBooks",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+
+                // 1. الكتب
+                var books = (await multi.ReadAsync<ImportBookViewModel>()).ToList();
+
+                // 2. Entities
+                var entities = (await multi.ReadAsync<(int BookId, string EntityName)>()).ToList();
+
+                // 3. SubEntities
+                var subEntities = (await multi.ReadAsync<(int BookId, string SubEntityName)>()).ToList();
+
+                // 4. SecondSubEntities
+                var secondSubEntities = (await multi.ReadAsync<(int BookId, string SecondSubEntityName)>()).ToList();
+                var teams = (await multi.ReadAsync<(int BookId, string TeamName)>()).ToList();
+
+                // 5. Total Count
+                var recordsTotal = (await multi.ReadAsync<int>()).FirstOrDefault();
+
+                // ربط الكيانات الفرعية بالكتب
+                foreach (var book in books)
+                {
+                    book.Entities = entities.Where(e => e.BookId == book.Id).Select(e => e.EntityName).ToList();
+                    book.SubEntities = subEntities.Where(e => e.BookId == book.Id).Select(e => e.SubEntityName).ToList();
+                    book.SecondSubEntities = secondSubEntities.Where(e => e.BookId == book.Id).Select(e => e.SecondSubEntityName).ToList();
+                    book.Circle = books.FirstOrDefault(b => b.Id == book.Id)?.Circle;
+                    book.Teams = teams.Where(t => t.BookId == book.Id).Select(t => t.TeamName).ToList();
+
+                }
+
+                return new ImportBookResult
+                {
+                    Books = books,
+                    RecordsTotal = recordsTotal
+                };
+            }
+        }
+        public class ImportBookResult
+        {
+            public List<ImportBookViewModel> Books { get; set; } = new();
+            public int RecordsTotal { get; set; }
+        }
         [HttpPost]
         public IActionResult GetImportBooksUnAccepted()
         {
