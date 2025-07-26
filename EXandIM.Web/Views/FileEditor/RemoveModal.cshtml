@@ -1,0 +1,21 @@
+﻿@* <!-- Modal حذف -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="deleteForm" method="post" asp-action="RemovePageAndRedirect" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">تأكيد حذف الصفحة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+            <div class="modal-body">
+                <p>هل أنت متأكد أنك تريد حذف الصفحة رقم <strong id="deletePageNumberDisplay"></strong>؟</p>
+                <input type="hidden" name="fileUrl" value="@Model.FileUrl" />
+                <input type="hidden" name="bookId" value="@Model.BookId" />
+                <input type="hidden" name="pageNumber" id="deletePageNumber" />
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-danger">نعم، احذف</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div> *@

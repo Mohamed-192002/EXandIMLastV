@@ -21,7 +21,6 @@
                 </div>
                 <!--end::Image--> *@
                 <!-- #endregion -->
-
                 <!--begin::Wrapper-->
                 <div class="flex-grow-1">
                     <!--begin::Head-->
@@ -192,10 +191,10 @@
                             </div>
                             <!--end::Stats-->
                         }
-                      
+
                     </div>
                     <!--end::Info-->
-                   
+
                 </div>
                 <!--end::Wrapper-->
             </div>
@@ -251,23 +250,26 @@
                 <div class="row">
                     @foreach (var item in Model.ExistingFiles)
                     {
-                        @if (item is not null)
+                        if (item is not null)
                         {
-                            <!--begin::Image-->
+                            var isPdf = item.FileUrl?.ToLower().EndsWith(".pdf") == true;
+                            var fileLink = isPdf
+                            ? Url.Action("ViewFile", "FileEditor", new { fileUrl = item.FileUrl})
+                            : Url.Content(item.FileUrl);
+
                             <div class="d-flex flex-center flex-shrink-0 bg-light rounded w-100px h-100px w-lg-150px h-lg-150px me-7 mb-4 flex-column">
                                 <h2 class="fw-bold">فتح الملف</h2>
-                                <a data-fslightbox href="@(string.IsNullOrEmpty(item.FileUrl) ? "~/assets/images/blue-file-folder.png" : item.FileUrl)" target="_blank">
+                                <a href="@fileLink" target="_blank">
                                     <img class="mw-50px mw-lg-75px" src="~/assets/images/blue-file-folder.png" alt="@Model.Title" />
                                 </a>
                                 <h2 class="fw-bold" title="@item.FileName" data-toggle="tooltip" data-placement="top">
                                     @((item.FileName?.Length > 11 ? item.FileName.Substring(0, 8) + "..." : item.FileName))
                                 </h2>
                             </div>
-                            <!--end::Image-->
-                            <!--end::Image-->
                         }
                     }
                 </div>
+
                 <!--end::Content-->
                 <!--end::Wrapper-->
             </div>

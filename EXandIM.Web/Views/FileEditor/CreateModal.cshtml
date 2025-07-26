@@ -1,0 +1,27 @@
+﻿@* <!-- Modal إضافة صورة -->
+<div class="modal fade" id="addImageModal" tabindex="-1" aria-labelledby="addImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form asp-action="AddImageToPage" method="post" enctype="multipart/form-data" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addImageModalLabel">إضافة صورة إلى صفحة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="fileUrl" value="@Model.FileUrl" />
+                <input type="hidden" name="bookId" value="@Model.BookId" />
+                <div class="mb-3">
+                    <label>رقم الصفحة:</label>
+                    <input type="number" name="pageNumber" min="1" max="@pageCount" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label>اختر الصورة:</label>
+                    <input type="file" name="imageFile" class="form-control" accept="image/*" required />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">إضافة</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div> *@
