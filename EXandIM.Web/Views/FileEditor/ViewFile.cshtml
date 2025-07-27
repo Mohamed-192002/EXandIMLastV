@@ -48,7 +48,7 @@
     <div class="modal-dialog">
         <form asp-action="AddImageToPage" method="post" enctype="multipart/form-data" class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addImageModalLabel">إضافة صورة إلى صفحة</h5>
+                <h5 class="modal-title" id="addImageModalLabel">إضافة صوره او ملف إلى صفحة</h5>
             </div>
             <div class="modal-body">
                 <input type="hidden" name="fileUrl" value="@Model.FileUrl" />
@@ -57,8 +57,9 @@
                     <input type="number" name="pageNumber" min="1" max="@pageCount" class="form-control" required />
                 </div>
                 <div class="mb-3">
-                    <label>اختر الصورة : </label>
-                    <input type="file" name="imageFile" class="form-control" accept="image/*" required />
+                    <label>اختر صوره او ملف : </label>
+                    <input type="file" name="imageFile" class="form-control" accept="image/*,application/pdf" required />
+
                 </div>
             </div>
             <div class="modal-footer">

@@ -69,7 +69,7 @@ namespace EXandIM.Web.Controllers
                 return NotFound("الملف غير موجود");
 
             // استخدم المسار المحفوظ للدالة
-            PdfPageEditor.InsertImagePage(inputPath, pageNumber - 1, imageFile);
+            PdfPageEditor.InsertFileAsPage(inputPath, pageNumber - 1, imageFile);
 
           
 

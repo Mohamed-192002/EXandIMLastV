@@ -132,6 +132,7 @@ namespace EXandIM.Web.Helpers
             if (finalImagePath != originalImagePath)
                 File.Delete(finalImagePath);
         }
+
         public static string ConvertImageToPng(string originalImagePath, string tempDir)
         {
             var extension = Path.GetExtension(originalImagePath).ToLower();
@@ -151,6 +152,54 @@ namespace EXandIM.Web.Helpers
             }
 
             return finalImagePath;
+        }
+        public static void InsertPdfIntoPdf(string mainPdfPath, int insertAtPage, IFormFile pdfFile)
+        {
+            string tempDir = Path.Combine(Path.GetTempPath(), "PdfTemp");
+            Directory.CreateDirectory(tempDir);
+
+            // حفظ ملف الـ PDF المؤقت
+            string tempPdfPath = Path.Combine(tempDir, Guid.NewGuid() + ".pdf");
+            using (var stream = new FileStream(tempPdfPath, FileMode.Create))
+            {
+                pdfFile.CopyTo(stream);
+            }
+
+            // فتح الملف الرئيسي والملف اللي هيتم إدراجه
+            using var mainDoc = PdfReader.Open(mainPdfPath, PdfDocumentOpenMode.Modify);
+            using var insertDoc = PdfReader.Open(tempPdfPath, PdfDocumentOpenMode.Import);
+
+            // إدراج كل الصفحات من الملف الثاني
+            for (int i = 0; i < insertDoc.PageCount; i++)
+            {
+                var page = insertDoc.Pages[i];
+                mainDoc.Pages.Insert(insertAtPage + i, page);
+            }
+
+            // حفظ التغييرات
+            mainDoc.Save(mainPdfPath);
+
+            // حذف الملف المؤقت
+            File.Delete(tempPdfPath);
+        }
+
+        public static void InsertFileAsPage(string filePath, int insertAtPage, IFormFile file)
+        {
+            string extension = Path.GetExtension(file.FileName).ToLower();
+            string[] imageExtensions = new[] { ".jpg", ".jpeg", ".png", ".bmp", ".gif", ".tif", ".tiff", ".webp" };
+
+            if (imageExtensions.Contains(extension))
+            {
+                InsertImagePage(filePath, insertAtPage, file);
+            }
+            else if (extension == ".pdf")
+            {
+                InsertPdfIntoPdf(filePath, insertAtPage, file);
+            }
+            else
+            {
+                throw new NotSupportedException("الملف المدخل ليس صورة أو PDF");
+            }
         }
 
     }

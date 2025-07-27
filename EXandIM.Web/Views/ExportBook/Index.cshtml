@@ -89,7 +89,8 @@
                 <input type="date" id="toDate" class="form-control form-control-solid" placeholder="إلى تاريخ" />
             </div>
             <div>
-                <button type="button" id="searchButton" class="btn btn-primary">بحث</button>
+                <button type="button" id="searchBookButton" class="btn btn-primary">بحث تاريخ الكتاب</button>
+                <button type="button" id="searchReferButton" class="btn btn-primary">بحث تاريخ الكتاب المشار اليه</button>
                 <button type="button" id="deleteSearch" class="btn btn-secondary" onclick="location.reload()">حذف البحث</button>
             </div>
         </div>
@@ -143,13 +144,19 @@
     <script src="~/js/books.js" asp-append-version="true"></script>
     <script src="~/js/selected-search.js"></script>
     <script>
-        $('#searchButton').on('click', function () {
+        $('#searchBookButton').on('click', function () {
             var fromDate = $('#fromDate').val();
             var toDate = $('#toDate').val();
 
             // Update DataTable AJAX URL with date filters
             datatable.ajax.url('/ExportBook/GetBooksAfterFilterDate?fromDate=' + encodeURIComponent(fromDate) + '&toDate=' + encodeURIComponent(toDate)).load();
         });
+         $('#searchReferButton').on('click', function () {
+            var fromDate = $('#fromDate').val();
+            var toDate = $('#toDate').val();
 
+            // Update DataTable AJAX URL with date filters
+            datatable.ajax.url('/ExportBook/GetBooksAfterFilterDate?fromReferDate=' + encodeURIComponent(fromDate) + '&toReferDate=' + encodeURIComponent(toDate)).load();
+        });
     </script>
 }
