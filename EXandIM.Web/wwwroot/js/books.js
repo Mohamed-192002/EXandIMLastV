@@ -127,33 +127,33 @@
             }
         });
     }
-    if (tbody.data('controller') === "ExportBook" || tbody.data('controller') === "ImportBook") {
-        columns.push({
-            data: null,
-            className: "js-no-export text-center",
-            orderable: false,
-            render: function (data, type, row, meta) {
-                return `<a href="javascript:;" type="button" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary js-render-modal"
-                        data-title="اضافه" data-url="/Activity/AddBookToActivity?bookId=${row.id}" data-update="true">
-                    إضافة
-                </a>`;
-            }
-        });
-    }
-    else {
-        columns.push({
-            data: null,
-            className: "js-no-export text-center",
-            orderable: false,
-            render: function (data, type, row, meta) {
-                return `<a href="javascript:;" type="button" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary js-render-modal"
-                        data-title="اضافه" data-url="/Activity/AddReadingToActivity?readingId=${row.id}" data-update="true">
-                    إضافة
-                </a>`;
-            }
-        });
-    }
-   
+    //if (tbody.data('controller') === "ExportBook" || tbody.data('controller') === "ImportBook") {
+    //    columns.push({
+    //        data: null,
+    //        className: "js-no-export text-center",
+    //        orderable: false,
+    //        render: function (data, type, row, meta) {
+    //            return `<a href="javascript:;" type="button" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary js-render-modal"
+    //                    data-title="اضافه" data-url="/Activity/AddBookToActivity?bookId=${row.id}" data-update="true">
+    //                إضافة
+    //            </a>`;
+    //        }
+    //    });
+    //}
+    //else {
+    //    columns.push({
+    //        data: null,
+    //        className: "js-no-export text-center",
+    //        orderable: false,
+    //        render: function (data, type, row, meta) {
+    //            return `<a href="javascript:;" type="button" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary js-render-modal"
+    //                    data-title="اضافه" data-url="/Activity/AddReadingToActivity?readingId=${row.id}" data-update="true">
+    //                إضافة
+    //            </a>`;
+    //        }
+    //    });
+    //}
+
     columns.push(
         {
             "className": 'text-start',
@@ -194,6 +194,16 @@
                         </div>`;
             }
         });
+    columns.unshift({
+        data: null,
+        orderable: false,
+        className: "text-center",
+        render: function (data, type, row) {
+            return `<input type="checkbox" class="book-checkbox" style = "width: 20px;height: 20px;transform: scale(1.3);cursor: pointer;"
+                 value="${row.id}" />`;
+        }
+    });
+
 
     // Handle title filter change event
     var titleFilter = $('#titleSearchId');
@@ -218,7 +228,7 @@
         },
         order: [[1, 'asc']],
         columnDefs: [{
-            targets: [0],
+            targets: [1],
             visible: false,
             searchable: false
         }],

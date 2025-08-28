@@ -169,7 +169,9 @@ $(document).ready(function () {
             }
         });
 
-        modal.modal('show');
+        // استخدام Bootstrap 5 modal
+        var bootstrapModal = new bootstrap.Modal(modal[0]);
+        bootstrapModal.show();
     });
 
     //Hanlde signout

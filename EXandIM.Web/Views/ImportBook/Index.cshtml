@@ -95,12 +95,17 @@
         </div>
     </div>
     <input type="hidden" id="isSuperAdmin" value="@User.IsInRole(AppRoles.SuperAdmin).ToString().ToLower()" />
-
+    <div>
+        <button type="button" id="addSelectedBooks" class="btn m-2 btn-success mb-3">
+            إضافة الكتب المختارة إلى سلسلة
+        </button>
+    </div>
     <div class="card-body fs-5 pt-0">
         <div class="table-responsive">
             <table id="Books" class="text-center table table-row-dashed table-row-gray-300 gy-2">
                 <thead>
                     <tr class="fw-bold  text-gray-800">
+                        <th class="text-center">اختيار</th>
                         <th class="d-none"></th>
                         <th>عنوان الكتاب</th>
                         <th>تاريخ الكتاب</th>
@@ -116,7 +121,7 @@
                         {
                             <th class="js-no-export" style="text-align:center">اخفاء / اظهار</th>
                         }
-                        <th class="js-no-export" style="text-align:center">اضافه الى سلسله</th>
+                        @* <th class="js-no-export" style="text-align:center">اضافه الى سلسله</th> *@
                         <th class="text-start">فعل</th>
                     </tr>
                 </thead>
@@ -142,6 +147,55 @@
     <script src="~/js/books.js" asp-append-version="true"></script>
     <script src="~/js/selected-search.js"></script>
     <script>
+                 $(document).on('click', '#addSelectedBooks', function () {
+            var selectedIds = [];
+            $('.book-checkbox:checked').each(function () {
+                selectedIds.push($(this).val());
+            });
+
+            if (selectedIds.length === 0) {
+                alert("من فضلك اختر على الأقل كتاب واحد");
+                return;
+            }
+
+            // فتح الموديل مع الكتب المختارة
+            var modal = $('#Modal');
+            modal.find('#ModalLabel').text('إضافة الكتب المختارة إلى سلسلة');
+            console.log("selectedIds : "+ selectedIds)
+            $.get({
+                url: '/Activity/AddBookToActivity',
+                data: { bookIds: selectedIds },
+                success: function (form) {
+                    // إضافة المحتوى إلى modal-body
+                    modal.find('.modal-body').html(form);
+
+                         selectedIds.forEach(function(id) {
+                            modal.find('form').append(`<input type="hidden" name="bookIds" value="${id}" />`);
+                        });
+                    // إضافة footer إذا لم يكن موجوداً
+                    if (modal.find('.modal-footer').length === 0) {
+                        modal.find('.modal-content').append('<div class="modal-footer"></div>');
+                    }
+
+                    // إضافة أزرار Footer
+                    var footer = modal.find('.modal-footer');
+                    footer.html(`
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">اغلاق</button>
+                        <button type="submit" class="btn btn-primary">حفظ</button>
+                    `);
+
+                    $.validator.unobtrusive.parse(modal);
+
+                    // استخدام Bootstrap 5 modal
+                    var bootstrapModal = new bootstrap.Modal(modal[0]);
+                    bootstrapModal.show();
+                },
+                error: function () {
+                    alert('حدث خطأ أثناء تحميل النموذج');
+                }
+            });
+        });
+
         $('#searchButton').on('click', function () {
             var fromDate = $('#fromDate').val();
             var toDate = $('#toDate').val();

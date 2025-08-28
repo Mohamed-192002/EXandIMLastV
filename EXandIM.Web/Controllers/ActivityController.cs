@@ -209,11 +209,12 @@ namespace EXandIM.Web.Controllers
         }
         [HttpGet]
         [AjaxOnly]
-        public IActionResult AddBookToActivity(int bookId)
+        public IActionResult AddBookToActivity(List<int> bookIds)
         {
             var userId = GetAuthenticatedUser();
             if (userId == null)
                 return BadRequest("يجب تسجيل الدخول اولا");
+
             var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
             List<ActivityBook> Activities;
             if (User.IsInRole(AppRoles.SuperAdmin))
@@ -222,167 +223,74 @@ namespace EXandIM.Web.Controllers
             }
             else
             {
-                Activities = [.. _context.Activities.Include(b => b.User).Where(b => b.User!.Id == userId && !b.IsHidden)];
+                Activities = [.. _context.Activities
+            .Include(b => b.User)
+            .Where(b => b.User!.Id == userId && !b.IsHidden)];
             }
+
             var viewModel = new AddToActivityViewModel
             {
-                Id = bookId,
+                BookIds = bookIds,
                 Activities = _mapper.Map<IEnumerable<SelectListItem>>(Activities)
             };
+
             return PartialView("_AddBookToActivity", viewModel);
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddBookToActivity(AddToActivityViewModel itemInActivityViewModel)
+        public async Task<IActionResult> AddBookToActivityAsync(List<int> bookIds, int ActivityId)
         {
             var userId = GetAuthenticatedUser();
             if (userId == null)
                 return BadRequest(new { errorMessage = "يجب تسجيل الدخول اولا" });
 
-            var user = _userManager.Users.Include(u => u.Team).SingleOrDefault(u => u.Id == userId);
-            if (user == null)
-                return BadRequest(new { errorMessage = "لا يمكن العثور على المستخدم" });
-
             var activity = await _context.Activities
                 .Include(a => a.Books).ThenInclude(x => x.Book)
-                .Include(a => a.Books).ThenInclude(x => x.Reading)
-                .Include(b => b.User).ThenInclude(u => u.Team)
-                .FirstOrDefaultAsync(a => a.Id == itemInActivityViewModel.ActivityId);
+                .FirstOrDefaultAsync(a => a.Id == ActivityId);
 
             if (activity is null)
                 return NotFound();
 
-            var book = await _context.Books.FindAsync(itemInActivityViewModel.Id);
-            if (book == null)
-                return BadRequest(new { errorMessage = "الكتاب غير موجود" });
-            if (activity.Books.Any(x => x.BookId == book.Id))
-                return BadRequest(new { errorMessage = "هذا الكتاب موجود فى السلسله" });
-
-            // استخراج التاريخ من العنصر الجديد
-            DateTime? newItemDate = book.BookDate;
-            if (newItemDate == null)
-                return BadRequest(new { errorMessage = "لا يوجد تاريخ للعنصر المراد إضافته" });
-
-            var itemInActivity = new ItemInActivity();
-            itemInActivity.BookId = book.Id;
-            itemInActivity.ActivityBookId = activity.Id;
-
-            // ترتيب القائمة الحالية بناء على التاريخ
+            // جيب كل الكتب الموجودة في النشاط
             var orderedItems = activity.Books.OrderBy(b => b.SortOrder).ToList();
 
-
-            // العثور على الموضع المناسب حسب التاريخ
-            double? newSortOrder = null;
-
-            for (int i = 0; i < orderedItems.Count - 1; i++)
+            foreach (var bookId in bookIds)
             {
-                var currentDate = orderedItems[i].Book?.BookDate ?? orderedItems[i].Reading?.BookDate;
-                var nextDate = orderedItems[i + 1].Book?.BookDate ?? orderedItems[i + 1].Reading?.BookDate;
+                var book = await _context.Books.FindAsync(bookId);
+                if (book == null || activity.Books.Any(x => x.BookId == book.Id))
+                    continue;
 
-                if (currentDate <= newItemDate && newItemDate <= nextDate)
+                DateTime? newItemDate = book.BookDate;
+                if (newItemDate == null)
+                    return BadRequest(new { errorMessage = "لا يوجد تاريخ للعنصر المراد إضافته" });
+
+                var itemInActivity = new ItemInActivity
                 {
-                    var currentSort = orderedItems[i].SortOrder;
-                    var nextSort = orderedItems[i + 1].SortOrder;
+                    BookId = book.Id,
+                    ActivityBookId = activity.Id
+                };
 
-                    // اختر قيمة بين الاثنين
-                    newSortOrder = (currentSort + nextSort) / 2.0;
-                    break;
-                }
+                // احسب مكان الكتاب الجديد بناءً على orderedItems
+                double newSortOrder = CalculateSortOrder(orderedItems, newItemDate.Value);
+
+                itemInActivity.SortOrder = newSortOrder;
+
+                // ضيفه في الليست عشان الكتب اللي بعده تاخده في الاعتبار
+                orderedItems.Add(itemInActivity);
+                orderedItems = orderedItems.OrderBy(b => b.SortOrder).ToList();
+
+                activity.Books.Add(itemInActivity);
             }
-
-            if (newSortOrder == null)
-            {
-                // التاريخ أقدم من كل العناصر
-                if (orderedItems.Count > 0 && newItemDate < (orderedItems[0].Book?.BookDate ?? orderedItems[0].Reading?.BookDate))
-                {
-                    newSortOrder = orderedItems[0].SortOrder - 1;
-                }
-                else
-                {
-                    // أضفه في النهاية
-                    newSortOrder = (orderedItems.LastOrDefault()?.SortOrder ?? 0) + 1;
-                }
-            }
-
-            itemInActivity.SortOrder = newSortOrder.Value;
-
-            // الإضافة دون تعديل الباقي
-            activity.Books.Add(itemInActivity);
 
             _context.Update(activity);
             await _context.SaveChangesAsync();
 
             return Ok();
         }
-        [HttpGet]
-        [AjaxOnly]
-        public IActionResult AddReadingToActivity(int readingId)
+        private double CalculateSortOrder(List<ItemInActivity> orderedItems, DateTime newItemDate)
         {
-            var userId = GetAuthenticatedUser();
-            if (userId == null)
-                return BadRequest(new { errorMessage = "يجب تسجيل الدخول اولا" });
-            var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
-            List<ActivityBook> Activities;
-            if (User.IsInRole(AppRoles.SuperAdmin))
-            {
-                Activities = [.. _context.Activities.Include(b => b.User)];
-            }
-            else
-            {
-                Activities = [.. _context.Activities.Include(b => b.User).Where(b => b.User!.Id == userId && !b.IsHidden)];
-            }
-            var viewModel = new AddToActivityViewModel
-            {
-                Id = readingId,
-                Activities = _mapper.Map<IEnumerable<SelectListItem>>(Activities)
-            };
-            return PartialView("_AddReadingToActivity", viewModel);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddReadingToActivity(AddToActivityViewModel itemInActivityViewModel)
-        {
-            var userId = GetAuthenticatedUser();
-            if (userId == null)
-                return BadRequest(new { errorMessage = "يجب تسجيل الدخول اولا" });
-
-            var user = _userManager.Users.Include(u => u.Team).SingleOrDefault(u => u.Id == userId);
-            if (user == null)
-                return BadRequest(new { errorMessage = "لا يمكن العثور على المستخدم" });
-
-            var activity = await _context.Activities
-                .Include(a => a.Books).ThenInclude(x => x.Book)
-                .Include(a => a.Books).ThenInclude(x => x.Reading)
-                .Include(b => b.User).ThenInclude(u => u.Team)
-                .FirstOrDefaultAsync(a => a.Id == itemInActivityViewModel.ActivityId);
-
-            if (activity is null)
-                return NotFound(new { errorMessage = "غير موجود" });
-
-            var reeading = await _context.Readings.FindAsync(itemInActivityViewModel.Id);
-            if (reeading == null)
-                return BadRequest(new { errorMessage = "الكتاب غير موجود" });
-            if (activity.Books.Any(x => x.ReadingId == reeading.Id))
-                return BadRequest(new { errorMessage = "هذا الكتاب موجود فى السلسله" });
-
-            // استخراج التاريخ من العنصر الجديد
-            DateTime? newItemDate = reeading.BookDate;
-            if (newItemDate == null)
-                return BadRequest(new { errorMessage = "لا يوجد تاريخ للعنصر المراد إضافته" });
-
-            var itemInActivity = new ItemInActivity();
-            itemInActivity.ReadingId = reeading.Id;
-            itemInActivity.ActivityBookId = activity.Id;
-
-            // ترتيب القائمة الحالية بناء على التاريخ
-            var orderedItems = activity.Books.OrderBy(b => b.SortOrder).ToList();
-
-
-            // العثور على الموضع المناسب حسب التاريخ
-            double? newSortOrder = null;
-
             for (int i = 0; i < orderedItems.Count - 1; i++)
             {
                 var currentDate = orderedItems[i].Book?.BookDate ?? orderedItems[i].Reading?.BookDate;
@@ -390,33 +298,123 @@ namespace EXandIM.Web.Controllers
 
                 if (currentDate <= newItemDate && newItemDate <= nextDate)
                 {
-                    var currentSort = orderedItems[i].SortOrder;
-                    var nextSort = orderedItems[i + 1].SortOrder;
-
-                    // اختر قيمة بين الاثنين
-                    newSortOrder = (currentSort + nextSort) / 2.0;
-                    break;
+                    return (orderedItems[i].SortOrder + orderedItems[i + 1].SortOrder) / 2.0;
                 }
             }
 
-            if (newSortOrder == null)
+            if (orderedItems.Count > 0 && newItemDate < (orderedItems[0].Book?.BookDate ?? orderedItems[0].Reading?.BookDate))
             {
-                // التاريخ أقدم من كل العناصر
-                if (orderedItems.Count > 0 && newItemDate < (orderedItems[0].Book?.BookDate ?? orderedItems[0].Reading?.BookDate))
-                {
-                    newSortOrder = orderedItems[0].SortOrder - 1;
-                }
-                else
-                {
-                    // أضفه في النهاية
-                    newSortOrder = (orderedItems.LastOrDefault()?.SortOrder ?? 0) + 1;
-                }
+                return orderedItems[0].SortOrder - 1;
             }
 
-            itemInActivity.SortOrder = newSortOrder.Value;
+            return (orderedItems.LastOrDefault()?.SortOrder ?? 0) + 1;
+        }
 
-            // الإضافة دون تعديل الباقي
-            activity.Books.Add(itemInActivity);
+        [HttpGet]
+        [AjaxOnly]
+        public IActionResult AddReadingToActivity(List<int> readingIds)
+        {
+            var userId = GetAuthenticatedUser();
+            if (userId == null)
+                return BadRequest(new { errorMessage = "يجب تسجيل الدخول اولا" });
+
+            var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
+            List<ActivityBook> Activities;
+
+            if (User.IsInRole(AppRoles.SuperAdmin))
+            {
+                Activities = [.. _context.Activities.Include(b => b.User)];
+            }
+            else
+            {
+                Activities = [.. _context.Activities
+            .Include(b => b.User)
+            .Where(b => b.User!.Id == userId && !b.IsHidden)];
+            }
+
+            var viewModel = new AddToActivityViewModel
+            {
+                BookIds = readingIds, // نخزن الـ IDs كلها
+                Activities = _mapper.Map<IEnumerable<SelectListItem>>(Activities)
+            };
+
+            return PartialView("_AddReadingToActivity", viewModel);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddReadingToActivityAsync(List<int> bookIds, int ActivityId)
+        {
+            var userId = GetAuthenticatedUser();
+            if (userId == null)
+                return BadRequest(new { errorMessage = "يجب تسجيل الدخول اولا" });
+
+            var activity = await _context.Activities
+                .Include(a => a.Books).ThenInclude(x => x.Book)
+                .Include(a => a.Books).ThenInclude(x => x.Reading)
+                .Include(b => b.User).ThenInclude(u => u.Team)
+                .FirstOrDefaultAsync(a => a.Id == ActivityId);
+
+            if (activity is null)
+                return NotFound(new { errorMessage = "غير موجود" });
+
+            foreach (var bookId in bookIds)
+            {
+                var reading = await _context.Readings.FindAsync(bookId);
+                if (reading == null || activity.Books.Any(x => x.ReadingId == reading.Id))
+                    continue;
+
+                DateTime? newItemDate = reading.BookDate;
+                if (newItemDate == null)
+                    return BadRequest(new { errorMessage = "لا يوجد تاريخ للعنصر المراد إضافته" });
+
+                var itemInActivity = new ItemInActivity();
+                itemInActivity.ReadingId = reading.Id;
+                itemInActivity.ActivityBookId = activity.Id;
+
+                // ترتيب القائمة الحالية بناء على التاريخ
+                var orderedItems = activity.Books.OrderBy(b => b.SortOrder).ToList();
+
+
+                // العثور على الموضع المناسب حسب التاريخ
+                double? newSortOrder = null;
+
+                for (int i = 0; i < orderedItems.Count - 1; i++)
+                {
+                    var currentDate = orderedItems[i].Book?.BookDate ?? orderedItems[i].Reading?.BookDate;
+                    var nextDate = orderedItems[i + 1].Book?.BookDate ?? orderedItems[i + 1].Reading?.BookDate;
+
+                    if (currentDate <= newItemDate && newItemDate <= nextDate)
+                    {
+                        var currentSort = orderedItems[i].SortOrder;
+                        var nextSort = orderedItems[i + 1].SortOrder;
+
+                        // اختر قيمة بين الاثنين
+                        newSortOrder = (currentSort + nextSort) / 2.0;
+                        break;
+                    }
+                }
+
+                if (newSortOrder == null)
+                {
+                    // التاريخ أقدم من كل العناصر
+                    if (orderedItems.Count > 0 && newItemDate < (orderedItems[0].Book?.BookDate ?? orderedItems[0].Reading?.BookDate))
+                    {
+                        newSortOrder = orderedItems[0].SortOrder - 1;
+                    }
+                    else
+                    {
+                        // أضفه في النهاية
+                        newSortOrder = (orderedItems.LastOrDefault()?.SortOrder ?? 0) + 1;
+                    }
+                }
+
+                itemInActivity.SortOrder = newSortOrder.Value;
+
+                // الإضافة دون تعديل الباقي
+                activity.Books.Add(itemInActivity);
+            }
 
             _context.Update(activity);
             await _context.SaveChangesAsync();
