@@ -80,8 +80,21 @@
 
         columns.push({ "data": "bookNumber", "name": "BookNumber" });
     }
-    if (tbody.data('controller') === "ExportBook") {
-        columns.push({ "data": "referToBookNumber", "name": "ReferToBookNumber" });
+   
+    if (tbody.data('controller') !== "Readings") {
+        columns.push({
+            "data": "referToBookNumber",
+            "name": "ReferToBookNumber",
+            "render": function (data, type, row) {
+                if (data != null) {
+                    let dateParam = moment(row.referDate).format("YYYY-MM-DD");
+                    return `<a href="javascript:;" class="js-find-book" data-number="${row.referToBookNumber}" data-date="${dateParam}">${data}</a>`;
+                } else {
+                    return "";
+                }
+            }
+        });
+
         columns.push({
             "className": 'text-center',
             "data": "referDate",
@@ -89,6 +102,22 @@
             "render": function (data, type, row) {
                 if (data != null) {
                     return moment(row.referDate).format('ll')
+                }
+                else
+                    return "";
+            }
+        });
+    }
+    if (tbody.data('controller') === "ImportBook") {
+        columns.push({ "data": "importNumber", "name": "ImportNumber" });
+        columns.push({
+            "className": 'text-center',
+            "data": "importDate",
+            "name": "ImportDate",
+            "render": function (data, type, row) {
+                if (data != null) {
+                    debugger
+                    return moment(row.importDate).format('ll')
                 }
                 else
                     return "";
@@ -236,3 +265,26 @@
 
     });
 });
+
+$(document).on("click", ".js-find-book", function () {
+    let number = $(this).data("number");
+    let date = $(this).data("date");
+
+    $.get(`/ImportBook/FindByRefer?number=${number}&date=${date}`, function (res) {
+        debugger
+        if (res.redirectUrl) {
+            window.open(res.redirectUrl, "_blank");
+        } else {
+            showErrorMessage("📌 الكتاب غير موجود");
+        }
+    });
+});
+function showErrorMessage(message = 'حدث خطأ') {
+    Swal.fire({
+        icon: 'error',
+        title: message,
+        customClass: {
+            confirmButton: "btn btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary"
+        }
+    });
+}

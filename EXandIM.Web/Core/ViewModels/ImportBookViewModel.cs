@@ -14,6 +14,9 @@
         public string? SideEntity { get; set; }
         public string ImportNumber { get; set; } = null!;
         public DateTime ImportDate { get; set; }
+        public bool IsReferTo { get; set; }
+        public string? ReferToBookNumber { get; set; }
+        public DateTime? ReferDate { get; set; }
         public string? Notes { get; set; }
         public bool IsAccepted { get; set; }
         public string? Circle { get; set; }

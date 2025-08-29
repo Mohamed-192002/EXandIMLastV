@@ -530,11 +530,11 @@ namespace EXandIM.Web.Controllers
             var books = new ImportBookResult();
             if (User.IsInRole(AppRoles.SuperAdmin))
             {
-                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, null, null, true);
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, null, null, null, null, true);
             }
             else
             {
-                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, null, null, false);
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, null, null, null, null, false);
             }
 
             var jsonData = new { recordsFiltered = books.RecordsTotal, books.RecordsTotal, data = books.Books };
@@ -543,7 +543,7 @@ namespace EXandIM.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetBooksAfterFilterDateAsync(DateTime? fromDate, DateTime? toDate)
+        public async Task<IActionResult> GetBooksAfterFilterDateAsync(DateTime? fromDate, DateTime? toDate, DateTime? fromReferDate, DateTime? toReferDate)
         {
             var skip = int.Parse(Request.Form["start"]!);
             var pageSize = int.Parse(Request.Form["length"]!);
@@ -560,18 +560,18 @@ namespace EXandIM.Web.Controllers
             var books = new ImportBookResult();
             if (User.IsInRole(AppRoles.SuperAdmin))
             {
-                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, fromDate, toDate, true);
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, fromDate, toDate, fromReferDate, toReferDate, true);
             }
             else
             {
-                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, fromDate, toDate, false);
+                books = await LoadBooks(skip, pageSize, searchValue, sortColumn, sortColumnDirection, fromDate, toDate, fromReferDate, toReferDate, false);
             }
             var jsonData = new { recordsFiltered = books.RecordsTotal, books.RecordsTotal, data = books.Books };
 
             return Ok(jsonData);
         }
         private async Task<ImportBookResult> LoadBooks(int skip, int pageSize, string search, string sortColumn, string sortDirection,
-            DateTime? fromDate = null, DateTime? toDate = null, bool isSuperAdmin = false)
+            DateTime? fromDate = null, DateTime? toDate = null, DateTime? fromReferDate = null, DateTime? toReferDate = null, bool isSuperAdmin = false)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -586,6 +586,8 @@ namespace EXandIM.Web.Controllers
                     SortDirection = sortDirection ?? "DESC",
                     FromDate = fromDate, // يمكن أن تكون null
                     ToDate = toDate,     // يمكن أن تكون null
+                    FromReferDate = fromReferDate, // يمكن أن تكون null
+                    ToReferDate = toReferDate,    // يمكن أن تكون null
                     IsSuperAdmin = isSuperAdmin
                 };
 
@@ -752,5 +754,23 @@ namespace EXandIM.Web.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+        [HttpGet]
+        public IActionResult FindByRefer(string number, DateTime date)
+        {
+            var book = _context.Books
+                .FirstOrDefault(b => b.BookNumber == number && b.BookDate.Date == date.Date);
+
+            if (book != null)
+            {
+                if (book.IsExport)
+                    return Json(new { redirectUrl = Url.Action("Details", "ExportBook", new { id = book.Id }) });
+                else
+                    return Json(new { redirectUrl = Url.Action("Details", "ImportBook", new { id = book.Id }) });
+            }
+
+            return Json(new { redirectUrl = "" });
+        }
+
+
     }
 }

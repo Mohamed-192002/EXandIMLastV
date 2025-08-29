@@ -73,5 +73,12 @@ namespace EXandIM.Web.Core.ViewModels
 
         [Display(Name = "هل تم المراجعه؟")]
         public bool Passed { get; set; } = default!;
+        [Display(Name = "هل يوجد كتاب مشار اليه؟")]
+        public bool IsReferTo { get; set; } = default!;
+
+        [Display(Name = "تاريخ الكتاب المشار اليه")]
+        public DateTime? ReferDate { get; set; } = DateTime.Now;
+        [Display(Name = "رقم الكتاب المشار اليه")]
+        public string? ReferToBookNumber { get; set; } = null!;
     }
 }

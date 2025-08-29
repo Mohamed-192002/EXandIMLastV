@@ -99,6 +99,48 @@
                 </div>
                 <!--end::Col-->
             </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="row">
+                        <!--begin::Label-->
+                        <label class="col-lg-4 col-form-label fw-semibold fs-6" asp-for="IsReferTo"></label>
+                        <!--begin::Label-->
+                        <!--begin::Label-->
+                        <div class="col-lg-8 d-flex align-items-center justify-content-center">
+                            <div class="form-check form-check-solid form-switch form-check-custom fv-row">
+                                <input class="form-check-input w-70px h-25px" type="checkbox" asp-for="IsReferTo">
+                            </div>
+                        </div>
+                        <!--begin::Label-->
+                    </div>
+                </div>
+                <div class="col-md-4 " id="refer-number-container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-5">
+                                <div class="form-floating mb-2">
+                                    <input type="text" class="form-control form-control-solid" placeholder="رقم الكتاب المشار اليه" asp-for="ReferToBookNumber" />
+                                    <label asp-for="ReferToBookNumber" class="required"></label>
+                                </div>
+                                <span asp-validation-for="ReferToBookNumber" class="text-danger d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" id="refer-date-container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-5">
+                                <div class="form-floating mb-2">
+                                    <input type="date" class="form-control form-control-solid" placeholder="تاريخ الكتاب المشار اليه" asp-for="ReferDate" />
+                                    <label asp-for="ReferDate" class="required"></label>
+                                </div>
+                                <span asp-validation-for="ReferDate" class="text-danger d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- #region BookFile -->
                 @* <div class="row">
@@ -342,5 +384,22 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="~/js/book-form.js" asp-append-version="true"></script>
     <script src="~/js/image.js" asp-append-version="true"></script>
+    <script>
+        const isReferCheckbox = document.getElementById("IsReferTo");
+        const referNumberDiv = document.getElementById("refer-number-container");
+        const referDateDiv = document.getElementById("refer-date-container");
+
+        function toggleReferFields() {
+            const show = isReferCheckbox.checked;
+            referNumberDiv.style.display = show ? "block" : "none";
+            referDateDiv.style.display = show ? "block" : "none";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            toggleReferFields();
+        });
+
+        isReferCheckbox.addEventListener("change", toggleReferFields);
+    </script>
 
 }

@@ -90,6 +90,7 @@
             </div>
             <div>
                 <button type="button" id="searchButton" class="btn btn-primary">بحث</button>
+                <button type="button" id="searchReferButton" class="btn btn-primary">بحث تاريخ الكتاب المشار اليه</button>
                 <button type="button" id="deleteSearch" class="btn btn-secondary" onclick="location.reload()">حذف البحث</button>
             </div>
         </div>
@@ -115,6 +116,10 @@
                         <th>المستوى الثانى للجهه</th>
                         <th>الجهة المرسل اليه </th>
                         <th>رقم الكتاب</th>
+                        <th>رقم الكتاب المشار اليه</th>
+                        <th>تاريخ الكتاب المشار اليه</th>
+                        <th>رقم الوارد</th>
+                        <th>تاريخ الورود</th>
                         <th>الملاحظات</th>
                         <th>المستخدم</th>
                         @if (User.IsInRole(AppRoles.SuperAdmin))
@@ -202,6 +207,13 @@
 
             // Update DataTable AJAX URL with date filters
             datatable.ajax.url('/ImportBook/GetBooksAfterFilterDate?fromDate=' + encodeURIComponent(fromDate) + '&toDate=' + encodeURIComponent(toDate)).load();
+        });
+          $('#searchReferButton').on('click', function () {
+            var fromDate = $('#fromDate').val();
+            var toDate = $('#toDate').val();
+
+            // Update DataTable AJAX URL with date filters
+            datatable.ajax.url('/ImportBook/GetBooksAfterFilterDate?fromReferDate=' + encodeURIComponent(fromDate) + '&toReferDate=' + encodeURIComponent(toDate)).load();
         });
 
     </script>
