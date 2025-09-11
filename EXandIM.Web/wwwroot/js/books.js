@@ -25,6 +25,9 @@
         },
 
     ];
+    if (tbody.data('controller') !== "Readings") {
+        columns.push({ "data": "bookNumber", "name": "BookNumber" });
+    }
     columns.push({
         "name": "Passed",
         "className": "text-center",
@@ -34,7 +37,7 @@
         }
     });
     columns.push({
-        "data": "entities", "name": "Entities", "orderable": false,
+        "data": "entities", "name": "Entities", "orderable": true,
         render: function (data, type, row) {
             if (Array.isArray(data)) {
                 var list = '<ul>';
@@ -48,7 +51,7 @@
         }
     });
     columns.push({
-        "data": "subEntities", "name": "SubEntities", "orderable": false,
+        "data": "subEntities", "name": "SubEntities", "orderable": true,
         render: function (data, type, row) {
             if (Array.isArray(data)) {
                 var list = '<ul>';
@@ -62,7 +65,7 @@
         }
     });
     columns.push({
-        "data": "secondSubEntities", "name": "SecondSubEntities", "orderable": false,
+        "data": "secondSubEntities", "name": "SecondSubEntities", "orderable": true,
         render: function (data, type, row) {
             if (Array.isArray(data)) {
                 var list = '<ul>';
@@ -77,8 +80,6 @@
     });
     if (tbody.data('controller') !== "Readings") {
         columns.push({ "data": "sideEntity", "name": "SideEntity" });
-
-        columns.push({ "data": "bookNumber", "name": "BookNumber" });
     }
    
     if (tbody.data('controller') !== "Readings") {

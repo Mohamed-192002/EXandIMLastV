@@ -248,6 +248,7 @@ namespace EXandIM.Web.Controllers
 
             var activity = await _context.Activities
                 .Include(a => a.Books).ThenInclude(x => x.Book)
+                .Include(a => a.Books).ThenInclude(x => x.Reading)
                 .FirstOrDefaultAsync(a => a.Id == ActivityId);
 
             if (activity is null)
