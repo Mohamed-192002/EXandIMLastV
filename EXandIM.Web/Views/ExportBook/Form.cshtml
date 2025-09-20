@@ -265,19 +265,29 @@
 					<!--begin::Row-->
 					<div class="row">
 						<!--begin::Col-->
-						<div class="fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
-							<select aria-label="Select a ReferenceNumber" data-control="select2" data-placeholder="الرقم المرجعى..." class="form-select form-select-solid form-select-lg fw-semibold"
+						<div class="col-10 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+							<select aria-label="Select a ReferenceNumber" data-control="select2" data-placeholder="الرقم المرجعى..."
+									class="form-select form-select-solid form-select-lg fw-semibold"
 									asp-for="ReferenceNumberId" asp-items="Model.ReferenceNumbers">
 								<option value="">الرقم المرجعى...</option>
 							</select>
 							<span asp-validation-for="ReferenceNumberId" class="text-danger d-block"></span>
 						</div>
 						<!--end::Col-->
+						<!-- زرار + -->
+						<div class="col-2 d-flex align-items-center">
+							<a href="javascript:;" class="btn btn-sm btn-success btn-icon js-render-modal"
+							   data-title="اضافه رقم مرجعى" data-url="/ReferenceNumber/Create">
+								<i class="bi bi-plus-lg"></i>
+							</a>
+						</div>
+
 					</div>
 					<!--end::Row-->
 				</div>
 				<!--end::Col-->
 			</div>
+
 			<div class="row">
 				<!--begin::Label-->
 				<label class="mb-5 col-lg-4 col-form-label fw-semibold fs-6" asp-for="Notes"></label>
@@ -386,6 +396,7 @@
 }
 
 <script>
+
 	function clearSelection() {
 		document.getElementById('sendCircleSelect').selectedIndex = 0;
 		$('#sendCircleSelect').val(null).trigger('change');

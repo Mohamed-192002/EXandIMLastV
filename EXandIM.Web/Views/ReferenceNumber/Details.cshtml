@@ -1,11 +1,38 @@
 ﻿@model ReferenceNumberDetailsViewModel
 
 @{
-    ViewData["Title"] = "السلسله";
+    ViewData["Title"] = "الرقم المرجعى";
 }
 
 <div class="card">
-
+    <!--begin::Card head-->
+    <div class="card-header card-header-stretch">
+        <!--begin::Title-->
+        <div class="card-title d-flex col-12 justify-content-around ">
+            <div>
+                <div class="d-flex">
+                    <!--begin::Stats-->
+                    <div class="d-flex flex-wrap">
+                        <!--begin::Stat-->
+                        <div class="border border-gray-300 border-dashed rounded min-w-125px px-4 me-6 ">
+                            <!--begin::Number-->
+                            <div class="d-flex text-center">
+                                <div class="fs-7 fw-bold text-primary text-center">@Model.Name</div>
+                            </div>
+                            <!--end::Number-->
+                            <!--begin::Label-->
+                            <div class="fw-semibold fs-6 text-center text-light">الرقم المرجعى</div>
+                            <!--end::Label-->
+                        </div>
+                        <!--end::Stat-->
+                    </div>
+                    <!--end::Stats-->
+                </div>
+            </div>
+        </div>
+        <!--end::Title-->
+    </div>
+    <!--end::Card head-->
     <!--begin::Card body-->
     <div class="card-body">
         <!--begin::Tab Content-->

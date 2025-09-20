@@ -7,6 +7,9 @@ using EXandIM.Web.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -38,12 +41,26 @@ namespace EXandIM.Web.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var ReferenceNumber = _mapper.Map<ReferenceNumber>(viewModel);
-            _context.ReferenceNumbers.Add(ReferenceNumber);
-            _context.SaveChanges();
-            return PartialView("_ReferenceNumberRow", _mapper.Map<ReferenceNumberViewModel>(ReferenceNumber));
 
+            var referenceNumber = _mapper.Map<ReferenceNumber>(viewModel);
+            _context.ReferenceNumbers.Add(referenceNumber);
+            _context.SaveChanges();
+
+            var vm = _mapper.Map<ReferenceNumberViewModel>(referenceNumber);
+
+            var html = RenderViewAsync(this, "_ReferenceNumberRow", vm, true).Result;
+
+            return Json(new
+            {
+                success = true,
+                id = vm.Id,
+                name = vm.Name, // غيّرها حسب اسم الحقل عندك
+                html = html
+            });
         }
+
+
+
         [HttpGet]
         [AjaxOnly]
         public IActionResult Edit(int id)
@@ -137,7 +154,35 @@ namespace EXandIM.Web.Controllers
 
             return View(viewModel);
         }
+        public static async Task<string> RenderViewAsync<TModel>(Controller controller, string viewName, TModel model, bool partial = false)
+        {
+            if (string.IsNullOrEmpty(viewName))
+                viewName = controller.ControllerContext.ActionDescriptor.ActionName;
 
+            controller.ViewData.Model = model;
+
+            using (var writer = new StringWriter())
+            {
+                var serviceProvider = controller.HttpContext.RequestServices;
+                var viewEngine = (ICompositeViewEngine)serviceProvider.GetService(typeof(ICompositeViewEngine));
+                var viewResult = viewEngine.FindView(controller.ControllerContext, viewName, !partial);
+
+                if (!viewResult.Success)
+                    throw new FileNotFoundException($"View '{viewName}' not found.");
+
+                var viewContext = new ViewContext(
+                    controller.ControllerContext,
+                    viewResult.View,
+                    controller.ViewData,
+                    controller.TempData,
+                    writer,
+                    new HtmlHelperOptions()
+                );
+
+                await viewResult.View.RenderAsync(viewContext);
+                return writer.GetStringBuilder().ToString();
+            }
+        }
     }
 
 

@@ -50,6 +50,7 @@ function onModalBegin() {
 }
 
 function onModalSuccess(item) {
+    debugger
     showSuccessMessage();
     $('#Modal').modal('hide');
 
@@ -60,6 +61,30 @@ function onModalSuccess(item) {
         updatedRow = undefined;
     }
     location.reload();
+    KTMenu.init();
+    KTMenu.initHandlers();
+}
+function onModalRefrenceNumSuccess(res) {
+    debugger
+    showSuccessMessage();
+    $('#Modal').modal('hide');
+
+    if ($('tbody').length > 0) {
+        if (updatedRow === undefined) {
+            $('tbody').append(res);
+        } else {
+            $(updatedRow).replaceWith(res);
+            updatedRow = undefined;
+        }
+        location.reload();
+    } else {
+        if (res.id !== undefined && res.name !== undefined) {
+            var option = new Option(res.name, res.id, true, true);
+            $("#ReferenceNumberId").append(option).trigger('change');
+        }
+    }
+
+    // إعادة تهيئة المينيو
     KTMenu.init();
     KTMenu.initHandlers();
 }
