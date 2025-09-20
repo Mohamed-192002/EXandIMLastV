@@ -13,6 +13,8 @@ namespace EXandIM.Web.Core.Models
         public bool Passed { get; set; } = default!;
 
         public string? Notes { get; set; }
+        public int? ReferenceNumberId { get; set; }
+        public ReferenceNumber? ReferenceNumber { get; set; }
         public ICollection<Entity> Entities { get; set; } = new List<Entity>();
 
         public ICollection<SubEntity> SubEntities { get; set; } = new List<SubEntity>();

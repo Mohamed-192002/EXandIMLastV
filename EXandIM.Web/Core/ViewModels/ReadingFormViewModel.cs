@@ -30,7 +30,9 @@ namespace EXandIM.Web.Core.ViewModels
         [Display(Name = "هل تم المراجعه؟")]
         public bool Passed { get; set; } = default!;
 
-
+        [Display(Name = "الرقم المرجعى")]
+        public int? ReferenceNumberId { get; set; }
+        public IEnumerable<SelectListItem>? ReferenceNumbers { get; set; }
 
         [Display(Name = "اسم الجهه")]
         [Required(ErrorMessage = "الحقل مطلوب")]

@@ -1,0 +1,126 @@
+﻿@model ReferenceNumberDetailsViewModel
+
+@{
+    ViewData["Title"] = "السلسله";
+}
+
+<div class="card">
+
+    <!--begin::Card body-->
+    <div class="card-body">
+        <!--begin::Tab Content-->
+        <div class="tab-content">
+            <!--begin::Tab panel-->
+            <div id="kt_activity_today" class="card-body p-0 tab-pane fade show active" role="tabpanel" aria-labelledby="kt_activity_today_tab">
+                <!--begin::Timeline-->
+                <div id="sortable-timeline" class="timeline timeline-border-dashed">
+                    @foreach (var book in Model.Items)
+                    {
+                        <!--begin::Timeline item-->
+                        <div class="timeline-item" data-id="@book.Id">
+                            <!--begin::Timeline line-->
+                            <div class="timeline-line"></div>
+                            <!--end::Timeline line-->
+                            <!--begin::Timeline icon-->
+                            <div class="timeline-icon">
+                                <i class="bi bi-arrow-bar-left fs-2 text-primary">
+                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                                </i>
+
+                            </div>
+                            <!--end::Timeline icon-->
+                            @if (book.Book is not null)
+                            {
+                                <!--begin::Timeline content-->
+                                <div class="timeline-content mb-10 mt-n1">
+                                    <!--begin::Timeline heading-->
+                                    <div class="pe-3 mb-5">
+                                        <!--begin::Description-->
+                                        <div class="d-flex align-items-center mt-1 fs-6">
+                                            <!--begin::Info-->
+                                            <div class="text-warning me-2 fs-7">تاريخ الكتاب @book.Book.BookDate.ToString("MM/dd/yyyy")</div>
+                                            <!--end::Info-->
+                                        </div>
+                                        <!--end::Description-->
+                                    </div>
+                                    <!--end::Timeline heading-->
+                                    <!--begin::Timeline details-->
+                                    <div class="overflow-auto pb-5">
+                                        <!--begin::Record-->
+                                        <div class="d-flex align-items-center border border-dashed border-gray-300 rounded min-w-750px px-7 py-3 mb-5">
+                                            <!--begin::Title-->
+                                            <a href="/@(book.Book.IsExport ? "ExportBook" : "ImportBook")/Details/@book.Book.Id" class="fs-5 text-gray-900 text-hover-primary fw-semibold w-375px min-w-200px">@book.Book.Title</a>
+                                            <!--end::Title-->
+                                            <div class="min-w-125px pe-2">
+                                                <span class="fs-6 badge badge-light-success">@((book.Book.IsExport) ? "صادر" : "وارد")</span>
+                                            </div>
+                                            <div class="min-w-125px pe-2">
+                                                <div class="fs-6 badge badge-light-@(@book.Book.Passed ? "success" : "danger")">@(@book.Book.Passed ? "منجزه" : "فى الانتظار")</div>
+                                            </div>
+                                            <!--begin::Action-->
+                                            <a href="/@(book.Book.IsExport ? "ExportBook" : "ImportBook")/Details/@book.Book.Id" class="btn btn-sm btn-light btn-active-light-primary">تفاصيل</a>
+                                            <!--end::Action-->
+                                        </div>
+                                        <!--end::Record-->
+                                    </div>
+                                    <!--end::Timeline details-->
+                                </div>
+                                <!--end::Timeline content-->
+                            }
+
+                            @if (book.Reading is not null)
+                            {
+                                <!--begin::Timeline content-->
+                                <div class="timeline-content mb-10 mt-n1">
+                                    <!--begin::Timeline heading-->
+                                    <div class="pe-3 mb-5">
+                                        <!--begin::Description-->
+                                        <div class="d-flex align-items-center mt-1 fs-6">
+                                            <!--begin::Info-->
+                                            <div class="text-warning me-2 fs-7">تاريخ الكتاب @book.Reading.BookDate.ToString("MM/dd/yyyy")</div>
+                                            <!--end::Info-->
+                                        </div>
+                                        <!--end::Description-->
+                                    </div>
+                                    <!--end::Timeline heading-->
+                                    <!--begin::Timeline details-->
+                                    <div class="overflow-auto pb-5">
+                                        <!--begin::Record-->
+                                        <div class="d-flex align-items-center border border-dashed border-gray-300 rounded min-w-750px px-7 py-3 mb-5">
+                                            <!--begin::Title-->
+                                            <a href="/Readings/Details/@book.Reading.Id" class="fs-5 text-gray-900 text-hover-primary fw-semibold w-375px min-w-200px">@book.Reading.Title</a>
+                                            <!--end::Title-->
+                                            <div class="min-w-125px pe-2">
+                                                <span class="badge badge-light-success fs-6">مطالعه</span>
+                                            </div>
+                                            <div class="min-w-125px pe-2">
+                                                <div class="fs-6 badge badge-light-@(@book.Reading.Passed ? "success" : "danger")">@(@book.Reading.Passed ? "منجزه" : "فى الانتظار")</div>
+                                            </div>
+                                            <!--begin::Action-->
+                                            <a href="/Readings/Details/@book.Reading.Id" class="btn btn-sm btn-light btn-active-light-primary">تفاصيل</a>
+                                            <!--end::Action-->
+                                        </div>
+                                        <!--end::Record-->
+                                    </div>
+                                    <!--end::Timeline details-->
+                                </div>
+                                <!--end::Timeline content-->
+                            }
+
+                        </div>
+                        <!--end::Timeline item-->
+                    }
+
+
+                </div>
+                <!--end::Timeline-->
+            </div>
+            <!--end::Tab panel-->
+        </div>
+        <!--end::Tab Content-->
+    </div>
+    <!--end::Card body-->
+</div>
+@section Scripts {
+
+}

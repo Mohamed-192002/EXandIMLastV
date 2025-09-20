@@ -15,6 +15,7 @@ namespace EXandIM.Web.Core.ViewModels
         public List<string>? Entities { get; set; }
         public List<string>? SubEntities { get; set; }
         public List<string>? SecondSubEntities { get; set; }
+        public string? ReferenceNumber { get; set; }
         public string? SideEntity { get; set; }
         public string? Notes { get; set; }
         public string? Circle { get; set; }

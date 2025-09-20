@@ -127,6 +127,7 @@
                         </a>
                         <!--end:Menu link--> *@
                     }
+        
                     @if (User.IsInRole(AppRoles.SuperAdmin) || User.IsInRole(AppRoles.Admin))
                     {
                         <!--begin:Menu link-->
@@ -156,6 +157,16 @@
                         <!--end:Menu link-->
                     }
                     <!--begin:Menu link-->
+                    <a class="menu-link" asp-controller="ReferenceNumber" asp-action="Index" active-when="ReferenceNumber">
+                        <span class="menu-icon">
+                            <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/technology/teh001.svg-->
+                            <span class="svg-icon svg-icon-muted svg-icon-2hx">
+                                <i style="font-size:20px" class="bi bi-bootstrap-reboot"></i>
+                            </span>
+                            <!--end::Svg Icon-->
+                        </span>
+                        <span class="menu-title">الرقم المرجعى</span>
+                    </a>
                     <a class="menu-link" asp-controller="ExportBook" asp-action="Index" active-when="ExportBook">
                         <span class="menu-icon">
                             <!--begin::Svg Icon | path: /var/www/preview.keenthemes.com/keenthemes/metronic/docs/core/html/src/media/icons/duotune/technology/teh001.svg-->

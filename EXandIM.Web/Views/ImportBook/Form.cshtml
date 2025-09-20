@@ -278,7 +278,28 @@
                 <!--end::Col-->
             </div>
            
-            
+            <div class="row">
+                <!--begin::Label-->
+                <label class="mb-5 col-lg-4 col-form-label fw-semibold fs-6">الرقم المرجعى</label>
+                <!--end::Label-->
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                    <!--begin::Row-->
+                    <div class="row">
+                        <!--begin::Col-->
+                        <div class="fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+                            <select aria-label="Select a ReferenceNumber" data-control="select2" data-placeholder="الرقم المرجعى..." class="form-select form-select-solid form-select-lg fw-semibold"
+                                    asp-for="ReferenceNumberId" asp-items="Model.ReferenceNumbers">
+                                <option value="">الرقم المرجعى...</option>
+                            </select>
+                            <span asp-validation-for="ReferenceNumberId" class="text-danger d-block"></span>
+                        </div>
+                        <!--end::Col-->
+                    </div>
+                    <!--end::Row-->
+                </div>
+                <!--end::Col-->
+            </div>
             <div class="row">
                 <!--begin::Label-->
                 <label class="mb-5 col-lg-4 col-form-label fw-semibold fs-6" asp-for="Notes"></label>

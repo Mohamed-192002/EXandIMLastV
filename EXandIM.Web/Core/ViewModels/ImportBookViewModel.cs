@@ -6,6 +6,7 @@
         public string Title { get; set; } = null!;
         public DateTime BookDate { get; set; }
         public string? BookNumber { get; set; }
+        public string? ReferenceNumber { get; set; }
         //    public string? FileUrl { get; set; }
         public IList<BookFileDisplay> ExistingFiles { get; set; } = new List<BookFileDisplay>();
         public List<string>? Entities { get; set; }

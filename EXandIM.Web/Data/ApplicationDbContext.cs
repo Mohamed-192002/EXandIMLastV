@@ -1,4 +1,5 @@
-﻿using EXandIM.Web.Core.Models;
+﻿using EXandIM.Web.Core;
+using EXandIM.Web.Core.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
@@ -7,6 +8,7 @@ namespace EXandIM.Web.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<ReferenceNumber> ReferenceNumbers { get; set; }
         public DbSet<Entity> Entities { get; set; }
         public DbSet<SideEntity> SideEntities { get; set; }
         public DbSet<SubEntity> SubEntities { get; set; }

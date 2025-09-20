@@ -707,7 +707,7 @@ namespace EXandIM.Web.Controllers
             var user = _userManager.Users.Include(u => u.Team).ThenInclude(t => t.Circle).SingleOrDefault(u => u.Id == userId);
 
             ImportBookFormViewModel viewModel = model is null ? new ImportBookFormViewModel() : model;
-
+            var ReferenceNumbers = _context.ReferenceNumbers.OrderBy(a => a.Name).ToList();
             var entities = _context.Entities.OrderBy(a => a.Name).ToList();
             var Subentities = _context.SubEntities.OrderBy(a => a.Name).ToList();
             var Sideentities = _context.Circles.OrderBy(a => a.Name).ToList();
@@ -720,7 +720,7 @@ namespace EXandIM.Web.Controllers
                 Teams = _context.Teams.Where(t => t.CircleId == user!.Team!.CircleId).OrderBy(a => a.Name).ToList();
 
             viewModel.Teams = _mapper.Map<IEnumerable<SelectListItem>>(Teams);
-
+            viewModel.ReferenceNumbers = _mapper.Map<IEnumerable<SelectListItem>>(ReferenceNumbers);
             viewModel.Entities = _mapper.Map<IEnumerable<SelectListItem>>(entities);
             viewModel.SubEntities = _mapper.Map<IEnumerable<SelectListItem>>(Subentities);
             viewModel.SecondSubEntities = _mapper.Map<IEnumerable<SelectListItem>>(SecondSubEntities);

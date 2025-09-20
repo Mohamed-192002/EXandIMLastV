@@ -28,6 +28,7 @@
     if (tbody.data('controller') !== "Readings") {
         columns.push({ "data": "bookNumber", "name": "BookNumber" });
     }
+    columns.push({ "data": "referenceNumber", "name": "ReferenceNumber" });
     columns.push({
         "name": "Passed",
         "className": "text-center",
@@ -117,7 +118,6 @@
             "name": "ImportDate",
             "render": function (data, type, row) {
                 if (data != null) {
-                    debugger
                     return moment(row.importDate).format('ll')
                 }
                 else

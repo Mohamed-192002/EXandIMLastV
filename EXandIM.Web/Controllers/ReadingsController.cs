@@ -46,7 +46,9 @@ namespace EXandIM.Web.Controllers
             var entities = _context.Entities.OrderBy(a => a.Name).ToList();
             var Subentities = _context.SubEntities.OrderBy(a => a.Name).ToList();
             var SecondSubEntities = _context.SecondSubEntities.OrderBy(a => a.Name).ToList();
+            var ReferenceNumbers = _context.ReferenceNumbers.OrderBy(a => a.Name).ToList();
 
+            viewModel.ReferenceNumbers = _mapper.Map<IEnumerable<SelectListItem>>(ReferenceNumbers);
             viewModel.Entities = _mapper.Map<IEnumerable<SelectListItem>>(entities);
             viewModel.SubEntities = _mapper.Map<IEnumerable<SelectListItem>>(Subentities);
             viewModel.SecondSubEntities = _mapper.Map<IEnumerable<SelectListItem>>(SecondSubEntities);
@@ -157,7 +159,9 @@ namespace EXandIM.Web.Controllers
             model.ExistingFiles = _mapper.Map<List<BookFileDisplay>>(readings.ReadingImages);
             var entities = _context.Entities.OrderBy(a => a.Name).ToList();
             model.Entities = _mapper.Map<IEnumerable<SelectListItem>>(entities);
+            var ReferenceNumbers = _context.ReferenceNumbers.OrderBy(a => a.Name).ToList();
 
+            model.ReferenceNumbers = _mapper.Map<IEnumerable<SelectListItem>>(ReferenceNumbers);
             model.SelectedEntities = readings.Entities.Select(t => t.Id).ToList();
             model.SelectedSubEntity = readings.SubEntities.Select(t => t.Id).ToList();
             model.SelectedSecondSubEntity = readings.SecondSubEntities.Select(t => t.Id).ToList();

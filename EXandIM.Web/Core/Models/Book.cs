@@ -16,6 +16,8 @@ namespace EXandIM.Web.Core.Models
 
         public int SideEntityId { get; set; }
         public SideEntity SideEntity { get; set; }
+        public int? ReferenceNumberId { get; set; }
+        public ReferenceNumber? ReferenceNumber { get; set; }
         public bool IsExport { get; set; } = false;
         public bool IsAccepted { get; set; } = false;
         public string? ImportNumber { get; set; } = null!;

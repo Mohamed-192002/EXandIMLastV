@@ -36,6 +36,9 @@ namespace EXandIM.Web.Core.ViewModels
         [Required(ErrorMessage = "الحقل مطلوب")]
         public int SideEntityId { get; set; }
         public IEnumerable<SelectListItem>? SideEntities { get; set; }
+        [Display(Name = "الرقم المرجعى")]
+        public int? ReferenceNumberId { get; set; }
+        public IEnumerable<SelectListItem>? ReferenceNumbers { get; set; }
         [Display(Name = "القسم")]
         public IList<int>? SelectedTeams { get; set; } = new List<int>();
         public IEnumerable<SelectListItem>? Teams { get; set; }

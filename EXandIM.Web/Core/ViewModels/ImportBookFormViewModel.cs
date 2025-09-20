@@ -28,6 +28,9 @@ namespace EXandIM.Web.Core.ViewModels
         //  [Required(ErrorMessage = "الحقل مطلوب")]
         public IList<int>? SelectedSecondSubEntity { get; set; } = new List<int>();
         public IEnumerable<SelectListItem>? SecondSubEntities { get; set; }
+        [Display(Name = "الرقم المرجعى")]
+        public int? ReferenceNumberId { get; set; }
+        public IEnumerable<SelectListItem>? ReferenceNumbers { get; set; }
         [Display(Name = "اسم الجهة المرسل إليها")]
         [Required(ErrorMessage = "الحقل مطلوب")]
         public int SideEntityId { get; set; }

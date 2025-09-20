@@ -7,6 +7,7 @@
         public DateTime BookDate { get; set; }
         public bool Passed { get; set; }
         public string? UserFullName { get; set; }
+        public string? ReferenceNumber { get; set; }
         public string? Circle { get; set; }
         public string? Notes { get; set; }
         public List<string>? Entities { get; set; }

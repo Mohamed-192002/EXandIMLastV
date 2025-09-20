@@ -1,0 +1,22 @@
+﻿@model ReferenceNumberViewModel
+<tr>
+    <td>@Model.Name</td>
+    <td style="text-align:center">
+        <a asp-controller="ReferenceNumber" asp-action="Details" asp-route-Id="@Model.Id" 
+        class="btn btn-sm btn-outline btn-outline-dashed btn-outline-warning btn-active-light-warning">
+            اظهار الكتب
+        </a>
+    </td>
+    <td style="text-align:center">
+        <a href="javascript:;" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-primary btn-active-light-primary js-render-modal"
+           data-title="تعديل الرقم المرجعى" data-url="/ReferenceNumber/Edit/@Model.Id" data-update="true">
+            تعديل الرقم المرجعى
+        </a>
+    </td>
+    <td style="text-align:end">
+        <a href="javascript:;" class="btn btn-sm btn-outline btn-outline-dashed btn-outline-danger btn-active-light-danger js-confirm"
+           data-title="حذف الرقم المرجعى" data-url="/ReferenceNumber/Delete/@Model.Id" data-update="true" data-message="هل متأكد من حذف هذا الرقم المرجعى؟">
+            حذف الرقم المرجعى
+        </a>
+    </td>
+</tr>
