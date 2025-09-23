@@ -265,8 +265,9 @@
 					<!--begin::Row-->
 					<div class="row">
 						<!--begin::Col-->
-						<div class="col-10 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
-							<select aria-label="Select a ReferenceNumber" data-control="select2" data-placeholder="الرقم المرجعى..."
+						<div class="col-8 fv-row fv-plugins-icon-container fv-plugins-bootstrap5-row-invalid">
+							<select id="ReferenceNumberSelect"
+									aria-label="Select a ReferenceNumber" data-control="select2" data-placeholder="الرقم المرجعى..."
 									class="form-select form-select-solid form-select-lg fw-semibold"
 									asp-for="ReferenceNumberId" asp-items="Model.ReferenceNumbers">
 								<option value="">الرقم المرجعى...</option>
@@ -282,11 +283,18 @@
 							</a>
 						</div>
 
+						<!-- زرار مسح -->
+						<div class="col-2 d-flex align-items-center">
+							<button type="button" class="btn btn-sm btn-danger btn-icon" id="clearReferenceNumber">
+								<i class="bi bi-x-lg"></i>
+							</button>
+						</div>
 					</div>
 					<!--end::Row-->
 				</div>
 				<!--end::Col-->
 			</div>
+
 
 			<div class="row">
 				<!--begin::Label-->
@@ -396,6 +404,7 @@
 }
 
 <script>
+		
 
 	function clearSelection() {
 		document.getElementById('sendCircleSelect').selectedIndex = 0;

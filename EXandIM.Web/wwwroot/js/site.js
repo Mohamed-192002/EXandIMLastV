@@ -142,6 +142,10 @@ function applySelect2() {
 }
 
 $(document).ready(function () {
+    $(document).on("click", "#clearReferenceNumber", function () {
+        // reset select value
+        $("#ReferenceNumberSelect").val("").trigger("change");
+    });
     //SweetAlert
     var message = $('#Message').text();
     if (message !== '') {
